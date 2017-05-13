@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include "metropolis.h"
 #include "lattice.h"
+#include <math.h>
 
 int main(int argc, char **argv) {
   int n = 3;
@@ -14,9 +15,9 @@ int main(int argc, char **argv) {
   int idx;
   srand(time(NULL));
   fill_lattice(lattice, n, prob);
-  print_lattice(lattice, n);
-  // for (int i = 0; i < niter; i++) {
-  metropolis(lattice, n, T);
-  // } 
+   for (int i = 0; i < niter; i++)
+     {
+       metropolis(lattice, n, T);
+     };
   return 0;
 }
