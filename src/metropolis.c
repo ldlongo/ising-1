@@ -4,7 +4,23 @@
 #include <math.h>
 #include "metropolis.h"
 
-int metropolis(int *lattice, int n, float T) {
+int metropolis(int *lattice, int n, float T) { 
+  //Elijo spin random
+  int idx=pick_site(lattice, n);
+  //Me fijo s hago o no el flip
+  flip(lattice,n,idx,T); 
+ return 0;
+}
+
+int pick_site(int *lattice, int n) {
+  int j;
+  int idx; //idx es la posicion del vector lattice que voy a  flipear( 1< idx< n*n)
+  idx =(int)((float)rand()*n*n/(float)RAND_MAX);
+  printf("Cambio:%d ",idx);
+  return idx;
+}
+
+int flip(int *lattice, int n, float T, int idx) {  
   //Calculo la energia Eo=E(s)
   int E=0;
   int J=-1; //interaccion
@@ -29,44 +45,43 @@ int metropolis(int *lattice, int n, float T) {
 
          E=E+J*((sij*su)+(sij*sd)+(sij*sl)+(sij*sr));
       }
-    }
+      }
   //Imprimo la energia
   E=E/2;//se divide por dos porque en la suma cuento dos veces sobre el mismo par
-  printf("Eant=%3d ",E); //imprimo energia vieja
+  printf("Eant=%3d ",E); //imprimo energia vieja */
   
-  //Elijo spin random
-  int idx=pick_site(lattice, n);
-  
-  //Calculo la energia nueva E(-s) o mejor DeltaE
-  //Saco i y j del idx
-   int i=idx/n;
+
+   int i=idx/n;//Paso de idx a i, j
    int j=idx%n;
 
+  
    int  jl=(j-1+n)%n;  //j_ izq
    int  jr=(j+1+n)%n;  //j_dcha
    int  iu=(i-1+n)%n;  //i_arriba
    int  id=(i+1+n)%n;  //i_abajo
 
-   int  sij=lattice[i*n+j]; //el actual 
-     
+   int  sij=lattice[i*n+j]; //el actual
+
    int  sr=lattice[i*n+jr];
    int  sl=lattice[i*n+jl];
    int  su=lattice[iu*n+j];
    int  sd=lattice[id*n+j];
 
+   //Calculo la variacion de energia si lo diera vuelta:
    int DeltaE=-2*J*sij*(su+sd+sr+sl);
-  
-  //Calculo Beta*DeltaT
+
+   //Calculo Beta*DeltaT
    float B=(float) 1/(float)T;
    double e=exp(1.);
    float pi=pow(e,-B*DeltaE);
    printf("DeltaE:%2d ", DeltaE);
    printf("pi=%f ",pi);
 
-  //Acepto o Rechazo
-   if (pi>1)
+   //Acepto o Rechazo
+   
+    if (pi>1)
      {
-       flip(lattice,n,T,idx);  //acepto con probabilidad 1 significa hacer el flip
+       lattice[idx]=lattice[idx]*(-1); //acepto con probabilidad 1 significa hacer el flip  
        printf("acepto  ");
        E=E+DeltaE;             //actualizo energia
        printf("Enva=%3d\n",E); //imprimo la energia nueva
@@ -79,7 +94,7 @@ int metropolis(int *lattice, int n, float T) {
 	 if (moneda<pi)
 	   {
 	     printf("acepto  ");
-	     flip(lattice,n,T,idx);  //hago el flip
+	     lattice[idx]=lattice[idx]*(-1) ;  //hago el flip
  	     E=E+DeltaE;             //actualizo energia
 	     printf("Enva=%3d\n",E); //imprimo la energia nueva
 	   }
@@ -89,19 +104,8 @@ int metropolis(int *lattice, int n, float T) {
 	     printf("Enva=%3d\n",E); //imprimo la energia que no habra cambiado
 	   }
      }
+   
+
   
- return 0;
-}
-
-int pick_site(int *lattice, int n) {
-  int j;
-  int idx; //idx es la posicion del vector lattice que voy a  flipear( 1< idx< n*n)
-  idx =(int)((float)rand()*n*n/(float)RAND_MAX);
-  printf("Cambio:%d ",idx);
-  return idx;
-}
-
-int flip(int *lattice, int n, float T, int idx) {
-  lattice[idx]=lattice[idx]*(-1);
   return 0;
 }
