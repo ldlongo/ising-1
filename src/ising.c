@@ -19,5 +19,6 @@ int main(int argc, char **argv) {
      {
        metropolis(lattice, n, T);
      };
+  free(lattice);
   return 0;
 }
