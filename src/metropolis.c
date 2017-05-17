@@ -4,11 +4,11 @@
 #include <math.h>
 #include "metropolis.h"
 
-int metropolis(int *lattice, int n, float T) { 
+int metropolis(int *lattice, int n, float T) {
   //Elijo spin random
   int idx=pick_site(lattice, n);
   //Me fijo s hago o no el flip
-  flip(lattice,n,idx,T); 
+  flip(lattice,n,idx,T);
  return 0;
 }
 
@@ -20,7 +20,9 @@ int pick_site(int *lattice, int n) {
   return idx;
 }
 
-int flip(int *lattice, int n, float T, int idx) {  
+int flip(int *lattice, int n, float T, int idx) {
+  extern float *lut; //variable externa puntero a tabla. Evita calcular las exponenciales cada vez que se llama a flip.
+  
   //Calculo la energia Eo=E(s)
   int E=0;
   int J=-1; //interaccion
@@ -43,7 +45,7 @@ int flip(int *lattice, int n, float T, int idx) {
          int  su=lattice[iu*n+j];
          int  sd=lattice[id*n+j];
 
-         E=E+J*((sij*su)+(sij*sd)+(sij*sl)+(sij*sr));
+         E=E+J*sij*(su+sd+sl+sr);
       }
       }
   //Imprimo la energia
@@ -71,9 +73,7 @@ int flip(int *lattice, int n, float T, int idx) {
    int DeltaE=-2*J*sij*(su+sd+sr+sl);
 
    //Calculo Beta*DeltaT
-   float B=(float) 1/(float)T;
-   double e=exp(1.);
-   float pi=pow(e,-B*DeltaE);
+   float pi=lut[5+(DeltaE+8)/4];
    printf("DeltaE:%2d ", DeltaE);
    printf("pi=%f ",pi);
 
