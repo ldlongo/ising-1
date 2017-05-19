@@ -3,4 +3,6 @@
 int metropolis(int *lattice, int n, float T);
 int pick_site(int *lattice, int n);
 int flip(int *lattice, int n, float T, int idx);
+int imprimir(int *lattice, int n);
+int energia(int *lattice, int n);
 #endif
