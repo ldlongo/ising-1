@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
   int n = 6;
   int *lattice = malloc(n * n * sizeof(int));
   float prob = 0.5;
-  float T = 3.0;
+  float T = 2.0;
   float B=(float)1/(float)T;
   int niter =1000;
   int idx;
