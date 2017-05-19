@@ -15,8 +15,8 @@ int metropolis(int *lattice, int n, float T) {
 int pick_site(int *lattice, int n) {
   int j;
   int idx; //idx es la posicion del vector lattice que voy a  flipear( 1< idx< n*n)
-  idx =(int)((float)rand()/RAND_MAX)*n*n;
-  printf("Cambio:%d ",idx);
+  idx =(int)((float)rand()*n*n/RAND_MAX);
+  printf("Pick:%2d ",idx);
   return idx;
 }
 
