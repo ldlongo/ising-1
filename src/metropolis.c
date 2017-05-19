@@ -43,34 +43,10 @@ int pick_site(int *lattice, int n) {
 int flip(int *lattice, int n, float T, int idx) {
   extern float *lut; //variable externa puntero a tabla. Evita calcular las exponenciales cada vez que se llama a flip. 
   //Calculo la energia Eo=E(s)
-  int E=0;
-  int J=-1; //interaccion
-  for (int i=0;i<n;i++)
-    {
-    for (int j=0;j<n;j++)
-      {
-        //Esta forma de definir los j y los i arregla el problema de las
-        //condiciones periodicas de contorno, evitando usar ifs:
-      
-         int  jl=(j-1+n)%n;  //j_ izq
-         int  jr=(j+1+n)%n;  //j_dcha
-         int  iu=(i-1+n)%n;  //i_arriba
-         int  id=(i+1+n)%n;  //i_abajo
-
-         int  sij=lattice[i*n+j]; //el actual 
-     
-         int  sr=lattice[i*n+jr];
-         int  sl=lattice[i*n+jl];
-         int  su=lattice[iu*n+j];
-         int  sd=lattice[id*n+j];
-
-         E=E+J*sij*(su+sd+sl+sr);
-      }
-      }
-  //Imprimo la energia
-  E=E/2;//se divide por dos porque en la suma cuento dos veces sobre el mismo par
-  printf("Eant=%3d ",E); //imprimo energia vieja */
-  
+   int E;
+   int J=-1;
+   E=energia(lattice,n);
+   printf("Eant=%3d ",E); //imprimo energia vieja */
 
    int i=idx/n;//Paso de idx a i, j
    int j=idx%n;
@@ -122,7 +98,36 @@ int flip(int *lattice, int n, float T, int idx) {
 	     printf("Enva=%3d\n",E); //imprimo la energia que no habra cambiado
 	   }
      }
-
-  
   return 0;
+}
+
+int energia(int *lattice, int n){
+  int E=0;
+  int J=-1;
+  //Todo esto lo mando a una funcion energia(lattice,n)
+  for (int i=0;i<n;i++)
+    {
+    for (int j=0;j<n;j++)
+      {
+        //Esta forma de definir los j y los i arregla el problema de las
+        //condiciones periodicas de contorno, evitando usar ifs:
+      
+         int  jl=(j-1+n)%n;  //j_ izq
+         int  jr=(j+1+n)%n;  //j_dcha
+         int  iu=(i-1+n)%n;  //i_arriba
+         int  id=(i+1+n)%n;  //i_abajo
+
+         int  sij=lattice[i*n+j]; //el actual 
+     
+         int  sr=lattice[i*n+jr];
+         int  sl=lattice[i*n+jl];
+         int  su=lattice[iu*n+j];
+         int  sd=lattice[id*n+j];
+
+         E=E+J*sij*(su+sd+sl+sr);
+      }
+     }
+ //Imprimo la energia
+ E=E/2;//se divide por dos porque en la suma cuento dos veces sobre el mismo par
+ return E;
 }
