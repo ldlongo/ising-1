@@ -60,6 +60,7 @@ int main(int argc, char **argv) {
    sprintf(filename, "%.2f-%.2f.txt", T,H); //el archivo tiene la temp y el campo
    f=fopen(filename,"wt");
    fprintf(f," Energia\tMagnetizacion\n");
+   fprintf(f,"%8.3f\t%8d\n",E,M); //aca imprimo los iniciales Eo y Mo
   
    for (int i = 0; i < niter; i++)
      {
