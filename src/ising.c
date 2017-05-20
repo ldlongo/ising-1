@@ -17,6 +17,7 @@ int main(int argc, char **argv) {
   float T = 3.0;              //temperatura
   float B=(float)1/(float)T;
   float H=0;                  //campo magnetico
+  float J=1;                  //interaccion
   int niter =5000;
   int idx;
   float E;
@@ -47,7 +48,7 @@ int main(int argc, char **argv) {
   fill_lattice(lattice, n, prob);
 
   imprimir(lattice,n);
-  E=energia(lattice,n,H);
+  E=energia(lattice,n,H, J);
   M=magnetizacion(lattice,n);
   printf("Eo:%.3f ",E);
   printf("Mo:%d\n",M);
@@ -64,7 +65,7 @@ int main(int argc, char **argv) {
   
    for (int i = 0; i < niter; i++)
      {
-       metropolis(lattice, n, T, H, &E, &M);
+       metropolis(lattice, n, T, H, J, &E, &M);
        printf("E:%.3f ",E);
        printf("M:%d\n",M);
        //Imprimo en archivo externo
