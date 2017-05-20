@@ -4,7 +4,11 @@
 #include <math.h>
 #include "metropolis.h"
 
-int  imprimir(int *lattice, int n){
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_GREEN   "\x1b[32m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
+
+int imprimir(int *lattice, int n){
     int j;
     int i;
     int s;
@@ -13,13 +17,30 @@ int  imprimir(int *lattice, int n){
     for (i=0;i<s;i=i+1){
 
         if (j!=n)
-         {printf("%2d\t",lattice[i]);
-         j=j+1;}
+         {
+	   if (lattice[i]<0)
+	     {
+	       printf(ANSI_COLOR_RED "%2d\t" ANSI_COLOR_RESET,lattice[i]);
+	     }
+	   else
+	     {
+	       printf(ANSI_COLOR_GREEN "%2d\t" ANSI_COLOR_RESET,lattice[i]);
+	     }
+           j=j+1;
+	 }
         else
-         {j=1;
-         printf("%2d\n",lattice[i]);}
+         { j=1;
+	   if (lattice[i]<0)
+	     {  
+               printf(ANSI_COLOR_RED "%2d\n" ANSI_COLOR_RESET,lattice[i]);
+	     }
+	   else
+	     {
+	       printf(ANSI_COLOR_GREEN "%2d\n" ANSI_COLOR_RESET,lattice[i]);
+	     }
+	 }
     }
-    printf("\n");
+    printf("\n");  
     return 0;
 }
 
@@ -44,9 +65,12 @@ int flip(int *lattice, int n, float T, int idx) {
   extern float *lut; //variable externa puntero a tabla. Evita calcular las exponenciales cada vez que se llama a flip. 
   //Calculo la energia Eo=E(s)
    int E;
+   int M;
    int J=-1;
    E=energia(lattice,n);
-   printf("Eant=%3d ",E); //imprimo energia vieja */
+   M=magnetizacion(lattice,n);
+   printf("Eant:%3d ",E); //imprimo energia vieja 
+   printf("Mant:%3d ",M);//imprimo magnetizacion vieja 
 
    int i=idx/n;//Paso de idx a i, j
    int j=idx%n;
@@ -66,19 +90,23 @@ int flip(int *lattice, int n, float T, int idx) {
 
    //Calculo la variacion de energia si lo diera vuelta:
    int DeltaE=-2*J*sij*(su+sd+sr+sl);
+   int DeltaM=2*sij;
 
    //Calculo Beta*DeltaT
    float pi=lut[5+(DeltaE+8)/4];
    printf("DeltaE:%2d ", DeltaE);
-   printf("pi=%f ",pi);
+   printf("DeltaM:%2d ",DeltaM);
+   printf("pi:%f ",pi);
 
    //Acepto o Rechazo
     if (pi>1)
      {
        lattice[idx]=lattice[idx]*(-1); //acepto con probabilidad 1 significa hacer el flip  
        printf("acepto  ");
-       E=E+DeltaE;             //actualizo energia
-       printf("Enva=%3d\n",E); //imprimo la energia nueva
+       E=E+DeltaE;              //actualizo energia
+       M=M+DeltaM;              //actualizo magnetizacion
+       printf("Enva:%3d ",E);   //imprimo la energia nueva
+       printf("Mnva:%3d\n",M); //imprimo la magnet nueva
      }
    else
      {
@@ -89,13 +117,17 @@ int flip(int *lattice, int n, float T, int idx) {
 	   {
 	     printf("acepto  ");
 	     lattice[idx]=lattice[idx]*(-1) ;  //hago el flip
- 	     E=E+DeltaE;             //actualizo energia
-	     printf("Enva=%3d\n",E); //imprimo la energia nueva
+ 	     E=E+DeltaE;              //actualizo energia
+	     M=M+DeltaM;              //actualizo magnet
+	     printf("Enva:%3d ",E);  //imprimo la energia nueva
+	     printf("Mnva:%3d\n",M); //imprimo la  magnet nueva
+	     
 	   }
 	 else
 	   {
              printf("rechazo ");      //no hago el flip
-	     printf("Enva=%3d\n",E); //imprimo la energia que no habra cambiado
+	     printf("Enva:%3d ",E); //imprimo la energia que no habra cambiado
+	     printf("Mnva:%3d\n",M); //imprimo la magnetizacion que no habra cambiado
 	   }
      }
   return 0;
@@ -130,4 +162,18 @@ int energia(int *lattice, int n){
  //Imprimo la energia
  E=E/2;//se divide por dos porque en la suma cuento dos veces sobre el mismo par
  return E;
+}
+
+int magnetizacion(int *lattice,int n){
+  int M=0;
+  int sij;
+  for (int i=0;i<n;i++)
+    {
+      for (int j=0;j<n;j++)
+      {
+         sij=lattice[i*n+j]; //el actual 
+	 M=M+sij;	 
+      }
+    } 
+  return M;
 }
