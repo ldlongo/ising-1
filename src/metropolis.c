@@ -108,7 +108,7 @@ int flip(int *lattice, int n, float T, int idx, float H, float *pE, int *pM) {
             *pM=*pM+DeltaM;      
 	   }
 	 else{}
-     }
+     }  
   return 0;
 }
 
