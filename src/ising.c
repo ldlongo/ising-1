@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
   float T = 3.0;              //temperatura
   float B=(float)1/(float)T;
   float H=0;                  //campo magnetico
-  int niter =100;
+  int niter =5000;
   int idx;
   float E;
   int M;
@@ -52,12 +52,27 @@ int main(int argc, char **argv) {
   printf("Eo:%.3f ",E);
   printf("Mo:%d\n",M);
   
+    //Imprimo datos:
+    //Imprimo en archivo de texto
+    char filename[64];
+
+   FILE *f;                   /* Declara puntero a tipo FILE */
+   sprintf(filename, "%.2f-%.2f.txt", T,H); //el archivo tiene la temp y el campo
+   f=fopen(filename,"wt");
+   fprintf(f," Energia\tMagnetizacion\n");
+  
    for (int i = 0; i < niter; i++)
      {
        metropolis(lattice, n, T, H, &E, &M);
        printf("E:%.3f ",E);
        printf("M:%d\n",M);
+       //Imprimo en archivo externo
+       fprintf(f,"%8.3f\t%8d\n",E,M);
      };
+
+   fflush(f);
+   fclose(f);
+   
   imprimir(lattice,n); 
   free(lattice);
   free(tabla);
