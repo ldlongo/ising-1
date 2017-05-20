@@ -80,5 +80,6 @@ int main(int argc, char **argv) {
   imprimir(lattice,n); 
   free(lattice);
   free(tabla);
+  free(tabla2);
   return 0;
 }
