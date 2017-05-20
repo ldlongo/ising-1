@@ -45,11 +45,11 @@ int imprimir(int *lattice, int n){
 }
 
 
-int metropolis(int *lattice, int n, float T, float H, float *pE, int *pM) {
+int metropolis(int *lattice, int n, float T, float H, float J, float *pE, int *pM) {
   //Elijo spin random
   int idx=pick_site(lattice, n);
   //Me fijo s hago o no el flip
-  flip(lattice, n, T, idx, H, pE, pM);
+  flip(lattice, n, T, idx, H, J, pE, pM);
  return 0;
 }
 
@@ -61,36 +61,30 @@ int pick_site(int *lattice, int n) {
   return idx;
 }
 
-int flip(int *lattice, int n, float T, int idx, float H, float *pE, int *pM) {
+int flip(int *lattice, int n, float T, int idx, float H, float J, float *pE, int *pM) {
    extern float *lut; //variable externa puntero a tabla. Evita calcular las exponenciales cada vez que se llama a flip.
    extern float *lut2;
-   
-   int J=1;
-  
-   int i=idx/n;//Paso de idx a i, j
-   int j=idx%n;
-   
-   int  jl=(j-1+n)%n;  //j_ izq
-   int  jr=(j+1+n)%n;  //j_dcha
-   int  iu=(i-1+n)%n;  //i_arriba
-   int  id=(i+1+n)%n;  //i_abajo
 
-   int  sij=lattice[i*n+j]; //el actual
-
-   int  sr=lattice[i*n+jr];
-   int  sl=lattice[i*n+jl];
-   int  su=lattice[iu*n+j];
-   int  sd=lattice[id*n+j];
+   //Condiciones periodicas de contorno:
+   
+    int i=idx/n;//Paso de idx a i, j
+    int j=idx%n;
+    int *spinborde=malloc(4*sizeof(int));
+    CPC(lattice, n, i, j, spinborde);
+    int  sij=lattice[i*n+j]; //el actual
 
    //Calculo la variacion de energia y magnetizacion  si lo diera vuelta:
-   int DeltaE=2*J*sij*(su+sd+sr+sl);
-   int DeltaM=-2*sij; //el negativo es porque si hay un +1 el cambio es del signo opuesto.
+    
+    int DeltaE=2*J*sij*(spinborde[0]+spinborde[1]+spinborde[2]+spinborde[3]);
+    int DeltaM=-2*sij; //el negativo es porque si hay un +1 el cambio es del signo opuesto.
 
-   //Calculo Beta*DeltaT
-   int idxtabla2=(sij+1+4)/2; // si sij=-1 corresponde con la pos 2 y si sij=1 con la pos 3 de la tabla 2 
-   float pi=lut[5+(DeltaE+8)/4]*lut2[idxtabla2];
+   //Calculo Beta*DeltaT y pi:
+    
+    int idxtabla2=(sij+1+4)/2; // si sij=-1 corresponde con la pos 2 y si sij=1 con la pos 3 de la tabla 2 
+    float pi=lut[5+(DeltaE+8)/4]*lut2[idxtabla2];
 
-   //Acepto o Rechazo
+   //Acepto o Rechazo:
+    
     if (pi>1)
      {
        lattice[idx]=lattice[idx]*(-1); //acepto con probabilidad 1 significa hacer el flip  
@@ -108,37 +102,32 @@ int flip(int *lattice, int n, float T, int idx, float H, float *pE, int *pM) {
             *pM=*pM+DeltaM;      
 	   }
 	 else{}
-     }  
+     }
+  free(spinborde);  
   return 0;
 }
 
-int energia(int *lattice, int n, float H){
+int energia(int *lattice, int n, float H, float J){
   int E=0;
-  int J=1;
+  int *spinborde=malloc(4*sizeof(int));
   //Todo esto lo mando a una funcion energia(lattice,n)
   for (int i=0;i<n;i++)
     {
     for (int j=0;j<n;j++)
       {
-        //Esta forma de definir los j y los i arregla el problema de las
-        //condiciones periodicas de contorno, evitando usar ifs:
-      
-         int  jl=(j-1+n)%n;  //j_ izq
-         int  jr=(j+1+n)%n;  //j_dcha
-         int  iu=(i-1+n)%n;  //i_arriba
-         int  id=(i+1+n)%n;  //i_abajo
+        
+        //Condiciones periodicas de contorno:
 
-         int  sij=lattice[i*n+j]; //el actual 
-     
-         int  sr=lattice[i*n+jr];
-         int  sl=lattice[i*n+jl];
-         int  su=lattice[iu*n+j];
-         int  sd=lattice[id*n+j];
-         E=E-J*sij*(su+sd+sl+sr)-H*2*sij; //el dos por el que multiplico es porque luego divido todo por 2, entonces para no afectar al termino que tiene el campo magnetico.
+	   CPC(lattice, n, i, j, spinborde);
+    
+           int  sij=lattice[i*n+j]; //el actual 
+	   //Energia acumulo: pongo el dos en  H*2*sij  para no afectar al termino que tiene el campo magnetico luego cuando hago E=E/2.
+           E=E-J*sij*(spinborde[0]+spinborde[1]+spinborde[2]+spinborde[3])-H*2*sij; 
       }
      }
  //Imprimo la energia
  E=E/2;//se divide por dos porque en la suma cuento dos veces sobre el mismo par
+ free(spinborde);
  return E;
 }
 
@@ -154,4 +143,26 @@ int magnetizacion(int *lattice,int n){
       }
     } 
   return M;
+}
+
+int CPC(int *lattice, int n, int i, int j, int* spinborde){
+  
+   int  jl=(j-1+n)%n;  //j_ izq
+   int  jr=(j+1+n)%n;  //j_dcha
+   int  iu=(i-1+n)%n;  //i_arriba
+   int  id=(i+1+n)%n;  //i_abajo
+
+   int  sij=lattice[i*n+j]; //el actual
+
+   int  sr=lattice[i*n+jr];
+   int  sl=lattice[i*n+jl];
+   int  su=lattice[iu*n+j];
+   int  sd=lattice[id*n+j];
+
+   spinborde[0]=lattice[i*n+jl]; //sl
+   spinborde[1]=lattice[i*n+jr]; //sr
+   spinborde[2]=lattice[iu*n+j];//su
+   spinborde[3]=lattice[id*n+j]; //sd
+       
+   return 0;
 }
