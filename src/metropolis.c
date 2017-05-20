@@ -45,11 +45,11 @@ int imprimir(int *lattice, int n){
 }
 
 
-int metropolis(int *lattice, int n, float T) {
+int metropolis(int *lattice, int n, float T, float H, float *pE, int *pM) {
   //Elijo spin random
   int idx=pick_site(lattice, n);
   //Me fijo s hago o no el flip
-  flip(lattice,n,T,idx);
+  flip(lattice, n, T, idx, H, pE, pM);
  return 0;
 }
 
@@ -57,25 +57,19 @@ int pick_site(int *lattice, int n) {
   int j;
   int idx; //idx es la posicion del vector lattice que voy a  flipear( 1< idx< n*n)
   idx =(int)((float)rand()*n*n/RAND_MAX);
-  printf("Pick:%3d ",idx);
+  // printf("Pick:%3d ",idx);
   return idx;
 }
 
-int flip(int *lattice, int n, float T, int idx) {
-  extern float *lut; //variable externa puntero a tabla. Evita calcular las exponenciales cada vez que se llama a flip. 
-  //Calculo la energia Eo=E(s)
-   int E;
-   int M;
-   int J=-1;
-   E=energia(lattice,n);
-   M=magnetizacion(lattice,n);
-   printf("Eant:%3d ",E); //imprimo energia vieja 
-   printf("Mant:%3d ",M);//imprimo magnetizacion vieja 
-
+int flip(int *lattice, int n, float T, int idx, float H, float *pE, int *pM) {
+   extern float *lut; //variable externa puntero a tabla. Evita calcular las exponenciales cada vez que se llama a flip.
+   extern float *lut2;
+   
+   int J=1;
+  
    int i=idx/n;//Paso de idx a i, j
    int j=idx%n;
    
-  
    int  jl=(j-1+n)%n;  //j_ izq
    int  jr=(j+1+n)%n;  //j_dcha
    int  iu=(i-1+n)%n;  //i_arriba
@@ -88,54 +82,39 @@ int flip(int *lattice, int n, float T, int idx) {
    int  su=lattice[iu*n+j];
    int  sd=lattice[id*n+j];
 
-   //Calculo la variacion de energia si lo diera vuelta:
-   int DeltaE=-2*J*sij*(su+sd+sr+sl);
-   int DeltaM=2*sij;
+   //Calculo la variacion de energia y magnetizacion  si lo diera vuelta:
+   int DeltaE=2*J*sij*(su+sd+sr+sl);
+   int DeltaM=-2*sij; //el negativo es porque si hay un +1 el cambio es del signo opuesto.
 
    //Calculo Beta*DeltaT
-   float pi=lut[5+(DeltaE+8)/4];
-   printf("DeltaE:%2d ", DeltaE);
-   printf("DeltaM:%2d ",DeltaM);
-   printf("pi:%f ",pi);
+   int idxtabla2=(sij+1+4)/2; // si sij=-1 corresponde con la pos 2 y si sij=1 con la pos 3 de la tabla 2 
+   float pi=lut[5+(DeltaE+8)/4]*lut2[idxtabla2];
 
    //Acepto o Rechazo
     if (pi>1)
      {
        lattice[idx]=lattice[idx]*(-1); //acepto con probabilidad 1 significa hacer el flip  
-       printf("acepto  ");
-       E=E+DeltaE;              //actualizo energia
-       M=M+DeltaM;              //actualizo magnetizacion
-       printf("Enva:%3d ",E);   //imprimo la energia nueva
-       printf("Mnva:%3d\n",M); //imprimo la magnet nueva
+       *pE=*pE+DeltaE;
+       *pM=*pM+DeltaM;
      }
    else
      {
        //acepto con probabilidad pi
        float moneda=(float)rand()/(float)RAND_MAX;
-       printf("moneda=%f ",moneda);
 	 if (moneda<pi)
 	   {
-	     printf("acepto  ");
 	     lattice[idx]=lattice[idx]*(-1) ;  //hago el flip
- 	     E=E+DeltaE;              //actualizo energia
-	     M=M+DeltaM;              //actualizo magnet
-	     printf("Enva:%3d ",E);  //imprimo la energia nueva
-	     printf("Mnva:%3d\n",M); //imprimo la  magnet nueva
-	     
+ 	    *pE=*pE+DeltaE;
+            *pM=*pM+DeltaM;      
 	   }
-	 else
-	   {
-             printf("rechazo ");      //no hago el flip
-	     printf("Enva:%3d ",E); //imprimo la energia que no habra cambiado
-	     printf("Mnva:%3d\n",M); //imprimo la magnetizacion que no habra cambiado
-	   }
+	 else{}
      }
   return 0;
 }
 
-int energia(int *lattice, int n){
+int energia(int *lattice, int n, float H){
   int E=0;
-  int J=-1;
+  int J=1;
   //Todo esto lo mando a una funcion energia(lattice,n)
   for (int i=0;i<n;i++)
     {
@@ -155,8 +134,7 @@ int energia(int *lattice, int n){
          int  sl=lattice[i*n+jl];
          int  su=lattice[iu*n+j];
          int  sd=lattice[id*n+j];
-
-         E=E+J*sij*(su+sd+sl+sr);
+         E=E-J*sij*(su+sd+sl+sr)-H*2*sij; //el dos por el que multiplico es porque luego divido todo por 2, entonces para no afectar al termino que tiene el campo magnetico.
       }
      }
  //Imprimo la energia
