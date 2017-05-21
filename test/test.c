@@ -181,5 +181,12 @@ int main(){
              printf("s_%d%d:%d sl:%d sr:%d su:%d sd:%d\n",i,j,lattice[i*n+j],spinborde[0],spinborde[1],spinborde[2],spinborde[3]);
             }
 	    printf("\n");
+	    
+   free(lattice);
+   free(hist);
+   free(tabla);
+   free(tabla2);
+   free(spinborde);
+	    
   return 0;
 }
