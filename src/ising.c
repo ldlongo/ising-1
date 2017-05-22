@@ -11,16 +11,17 @@ float *lut;  //esta variable será global puntero a tabla1
 float *lut2; //esta variable será global puntero a tabla2
 
 int main(int argc, char **argv) {
-  int n = 16;
+  int n = 10;
   int *lattice = malloc(n * n * sizeof(int));
-  float prob = 0.5;           //prob de llenado 
-  float T = 3.0;              //temperatura
-  float B=(float)1/(float)T;  //beta
-  float H=0;                  //campo magnetico
-  float J=1;                  //interaccion
-  int niter =5000;            //pasos metropoli
-  float E;                    //energia
-  int M;                      //magnetizacion
+  float prob = 0.5;                      //prob de llenado 
+  float T = 1.0;                         //temperatura
+  float B=(float)1/(float)T;             //beta
+  float H=0;                             //campo magnetico
+  float J=1;                             //interaccion
+  int niter =100000;                       //pasos metropoli
+  float E;                               //energia
+  int M;                                 //magnetizacion
+  int *Ecorr= malloc(niter*sizeof(int)); //Ecorrelacion
   //---------------------------------------
   //Tabla1
   //DeltaE vs exp(-BDeltaE)
@@ -66,20 +67,21 @@ int main(int argc, char **argv) {
   
    for (int i = 0; i < niter; i++)
      {
-       metropolis(lattice, n, T, H, J, &E, &M);
-       //En terminal
-         printf("E:%.3f ",E);
-         printf("M:%d\n",M);
-       //En archivo externo
-         fprintf(f,"%8.3f\t%8d\n",E,M);
+       metropolis(lattice, n, T, H, J, &E, &M,f);
      };
 
    fflush(f);
    fclose(f);
    
-  imprimir(lattice,n); 
+  imprimir(lattice,n);
+  //imprimo Ecorr
+  //for (int i=0;i<niter;i++){
+  // printf("Ecorr [%d]: %d\n",i,Ecorr[i]);
+  // }
+  
   free(lattice);
   free(tabla);
   free(tabla2);
+  free(Ecorr);
   return 0;
 }
