@@ -45,11 +45,11 @@ int imprimir(int *lattice, int n){
 }
 
 
-int metropolis(int *lattice, int n, float T, float H, float J, float *pE, int *pM) {
+int metropolis(int *lattice, int n, float T, float H, float J, float *pE, int *pM, FILE *f) {
   //Elijo spin random
   int idx=pick_site(lattice, n);
   //Me fijo s hago o no el flip
-  flip(lattice, n, T, idx, H, J, pE, pM);
+  flip(lattice, n, T, idx, H, J, pE, pM,f);
  return 0;
 }
 
@@ -61,7 +61,7 @@ int pick_site(int *lattice, int n) {
   return idx;
 }
 
-int flip(int *lattice, int n, float T, int idx, float H, float J, float *pE, int *pM) {
+int flip(int *lattice, int n, float T, int idx, float H, float J, float *pE, int *pM, FILE *f) {
    extern float *lut; //variable externa puntero a tabla. Evita calcular las exponenciales cada vez que se llama a flip.
    extern float *lut2;
 
@@ -90,6 +90,9 @@ int flip(int *lattice, int n, float T, int idx, float H, float J, float *pE, int
        lattice[idx]=lattice[idx]*(-1); //acepto con probabilidad 1 significa hacer el flip  
        *pE=*pE+DeltaE;
        *pM=*pM+DeltaM;
+       printf("E:%.3f ",(float)(*pE)/(n*n));
+       printf("M:%.3f\n",(float)(*pM)/(n*n));
+       fprintf(f,"%8.3f\t%8.3f\n",(float)*pE/(n*n),(float)(*pM)/(n*n)); 
      }
    else
      {
@@ -99,7 +102,10 @@ int flip(int *lattice, int n, float T, int idx, float H, float J, float *pE, int
 	   {
 	     lattice[idx]=lattice[idx]*(-1) ;  //hago el flip
  	    *pE=*pE+DeltaE;
-            *pM=*pM+DeltaM;      
+            *pM=*pM+DeltaM;
+	    printf("E:%.3f ",(float)(*pE)/(n*n));
+            printf("M:%.3f\n",(float)*pM/(n*n));
+	    fprintf(f,"%8.3f\t%8.3f\n",(float)*pE/(n*n),(float)*pM/(n*n)); 
 	   }
 	 else{}
      }
