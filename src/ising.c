@@ -53,8 +53,8 @@ int main(int argc, char **argv) {
   
   M=magnetizacion(lattice,n);
   
-  printf("Eo:%.3f ",E);
-  printf("Mo:%d\n",M);
+  printf("Eo:%.3f ",(float)E/(n*n));
+  printf("Mo:%f\n",(float)M/(n*n));
   
   //Imprimo datos en archivo de texto
    char filename[64];
@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
    sprintf(filename, "%.2f-%.2f.txt", T,H); // el archivo tiene la temp y el campo
    f=fopen(filename,"wt");
    fprintf(f," Energia\tMagnetizacion\n");
-   fprintf(f,"%8.3f\t%8d\n",E,M);          //aca imprimo los iniciales Eo y Mo
+   fprintf(f,"%8.3f\t%8f\n",(float)E/(n*n),(float)M/(n*n));          //aca imprimo los iniciales Eo y Mo
   
    for (int i = 0; i < niter; i++)
      {
