@@ -45,11 +45,11 @@ int imprimir(int *lattice, int n){
 }
 
 
-int metropolis(int *lattice, int n, float T, float H, float J, float *pE, int *pM, FILE *f, float *ecorr, int *contador) {
+int metropolis(int *lattice, int n, float T, float H, float J, float *pE, int *pM) {
   //Elijo spin random
   int idx=pick_site(lattice, n);
   //Me fijo s hago o no el flip
-  flip(lattice, n, T, idx, H, J, pE, pM,f,ecorr,contador);
+  flip(lattice, n, T, idx, H, J, pE, pM);
 return 0;
 }
 
@@ -61,7 +61,7 @@ int pick_site(int *lattice, int n) {
   return idx;
 }
 
-int flip(int *lattice, int n, float T, int idx, float H, float J, float *pE, int *pM, FILE *f, float *ecorr, int *contador) {
+int flip(int *lattice, int n, float T, int idx, float H, float J, float *pE, int *pM) {
    extern float *lut; //variable externa puntero a tabla. Evita calcular las exponenciales cada vez que se llama a flip.
    extern float *lut2;
 
@@ -90,13 +90,6 @@ int flip(int *lattice, int n, float T, int idx, float H, float J, float *pE, int
        lattice[idx]=lattice[idx]*(-1); //acepto con probabilidad 1 significa hacer el flip  
        *pE=*pE+DeltaE;
        *pM=*pM+DeltaM;
-      
-       ecorr[*contador]=(float)*pE/(n*n);
-       *contador=*contador+1;
-       
-       printf("E:%.3f ",(float)(*pE)/(n*n));
-       printf("M:%.3f\n",(float)(*pM)/(n*n));
-       fprintf(f,"%8.3f\t%8.3f\n",(float)*pE/(n*n),(float)(*pM)/(n*n)); 
      }
    else
      {
@@ -107,13 +100,6 @@ int flip(int *lattice, int n, float T, int idx, float H, float J, float *pE, int
 	     lattice[idx]=lattice[idx]*(-1) ;  //hago el flip
  	    *pE=*pE+DeltaE;
             *pM=*pM+DeltaM;
-
-            ecorr[*contador]=(float)*pE/(n*n);
-	    *contador=*contador+1;
-	    
-	    printf("E:%.3f ",(float)(*pE)/(n*n));
-            printf("M:%.3f\n",(float)*pM/(n*n));
-	    fprintf(f,"%8.3f\t%8.3f\n",(float)*pE/(n*n),(float)*pM/(n*n)); 
 	   }
 	 else{}
      }
@@ -181,7 +167,7 @@ int CPC(int *lattice, int n, int i, int j, int* spinborde){
    return 0;
 }
 
-int correlacion(float *ecorr, int *contador, float T, float H){
+int correlacion(float *ecorr, int contador, float T, float H){
   int k=0;
   float sumacov;
   float sumavar=0;
@@ -198,39 +184,38 @@ int correlacion(float *ecorr, int *contador, float T, float H){
    g=fopen(filename,"wt");
    fprintf(g,"k\t\tcorr_k\n");
 
-  printf("Correlacion\n");
-  printf("k\t\tcorr(k)\n");
+   //printf("Correlacion\n");
+   //printf("k\t\tcorr(k)\n");
   
   //promedio
-  for (int i=0;i<*contador;i++){
+  for (int i=0;i<contador;i++){
     sumaprom=sumaprom+ecorr[i];
   }
-  promedio=(float)sumaprom/(*contador);
+  promedio=(float)sumaprom/(contador);
   
   //varianza:
   sumavar=0;
-  for(int i=0;i<*contador;i++){
+  for(int i=0;i<contador;i++){
     sumavar=sumavar+(ecorr[i]-promedio)*(ecorr[i]-promedio);
   }
-  var=(float)sumavar/(*contador);
+  var=(float)sumavar/(contador);
   //covarianza_k:
-  for(int k=0;k<5000;k++)
+  for(int k=0;k<10000;k++)
     {
       sumacov=0;
       cov_k=0;
       corr=0;
-      for (int i=0;i<(*contador-k);i++)
+      for (int i=0;i<(contador-k);i++)
 	{
           sumacov=sumacov+(ecorr[i]-promedio)*(ecorr[i+k]-promedio);
         }
-      cov_k=(float)sumacov/(*contador-k);
+      cov_k=(float)sumacov/(contador-k);
       corr=(float)cov_k/var; //correlacion
-      printf("%d\t\t%f\n",k,corr);
       fprintf(g,"%d\t\t%f\n",k,corr);
   }
   
    fflush(g);
    fclose(g);
-
+   printf("contador de energias: %d\n",contador);
 return 0;
 }
