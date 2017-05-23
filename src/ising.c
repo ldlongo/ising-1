@@ -76,20 +76,11 @@ int main(int argc, char **argv) {
    fflush(f);
    fclose(f);
    
-  imprimir(lattice,n);
-  printf("contador: %d\n",*contador); //cantidad de energias que guardo
-  
-  //Imprimo datos en archivo de texto
-   FILE *g;                                 // Declara puntero a tipo FILE
-   sprintf(filename, "corr%.2f-%.2f.txt",T ,H); // el archivo tiene la temp y el campo
-   g=fopen(filename,"wt");
-   fprintf(g,"k\t\tcorr_k\n");
+   imprimir(lattice,n);
+   printf("contador: %d\n",*contador); //cantidad de energias que guardo
 
-   //Funcion correlacion: recibe la lista de energias ecorr y me imprime en archivo corr_k(k)
-   correlacion(ecorr,contador,g);
-
-   fflush(g);
-   fclose(g);
+   //Funcion correlacion:
+   correlacion(ecorr,contador,T,H);
   
   free(lattice);
   free(tabla);
