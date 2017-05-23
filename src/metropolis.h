@@ -7,6 +7,6 @@ int imprimir(int *lattice, int n);
 int energia(int *lattice, int n, float H, float J);
 int magnetizacion(int *lattice,int n);
 int CPC(int *lattice, int n, int i, int j, int* spinborde);
-int correlacion(float *ecorr, int *contador,FILE *g);
+int correlacion(float *ecorr, int *contador, float T, float H);
 #endif
 
