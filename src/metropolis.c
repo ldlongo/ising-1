@@ -181,7 +181,7 @@ int CPC(int *lattice, int n, int i, int j, int* spinborde){
    return 0;
 }
 
-int correlacion(float *ecorr, int *contador, FILE *g){
+int correlacion(float *ecorr, int *contador, float T, float H){
   int k=0;
   float sumacov;
   float sumavar=0;
@@ -190,6 +190,13 @@ int correlacion(float *ecorr, int *contador, FILE *g){
   float cov_k;
   float var;
   float corr;
+
+ //Imprimo datos en archivo de texto
+    char filename[64];
+   FILE *g;                                 // Declara puntero a tipo FILE
+   sprintf(filename, "corr%.2f-%.2f.txt",T ,H); // el archivo tiene la temp y el campo
+   g=fopen(filename,"wt");
+   fprintf(g,"k\t\tcorr_k\n");
 
   printf("Correlacion\n");
   printf("k\t\tcorr(k)\n");
@@ -222,5 +229,8 @@ int correlacion(float *ecorr, int *contador, FILE *g){
       fprintf(g,"%d\t\t%f\n",k,corr);
   }
   
+   fflush(g);
+   fclose(g);
+
 return 0;
 }
