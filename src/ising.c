@@ -11,18 +11,19 @@ float *lut;  //esta variable será global puntero a tabla1
 float *lut2; //esta variable será global puntero a tabla2
 
 int main(int argc, char **argv) {
-  int n = 10;
+  int n = 32;
   int *lattice = malloc(n * n * sizeof(int));
   float prob = 0.5;                      //prob de llenado 
-  float T = 2.0;                         //temperatura
+  float T = 1.5;                         //temperatura
   float B=(float)1/(float)T;             //beta
   float H=0;                             //campo magnetico
   float J=1;                             //interaccion
-  int niter =100000;                       //pasos metropoli
+  int ter=10000;                         //pasos de termalizacion
+  int niter =20000;                    //pasos metropoli
   float E;                               //energia
   int M;                                 //magnetizacion
   float *ecorr= malloc(niter*sizeof(float)); //Ecorrelacion
-  int *contador=malloc(sizeof(int));         //Va a contar la cantidad de pasos que acepto
+  int contador;         //Va a contar la cantidad de pasos que acepto
   
   //---------------------------------------
   //Tabla1
@@ -54,9 +55,13 @@ int main(int argc, char **argv) {
   E=energia(lattice,n,H, J);
   
   M=magnetizacion(lattice,n);
+
+  //Termalizacion
+  for (int i = 0; i < ter; i++)
+     {
+       metropolis(lattice, n, T, H, J, &E, &M);
+     };
   
-  printf("Eo:%.3f ",(float)E/(n*n));
-  printf("Mo:%f\n",(float)M/(n*n));
   
   //Imprimo datos en archivo de texto
    char filename[64];
@@ -70,22 +75,23 @@ int main(int argc, char **argv) {
    //Metropolis
    for (int i = 0; i < niter; i++)
      {
-       metropolis(lattice, n, T, H, J, &E, &M,f,ecorr,contador);
+       metropolis(lattice, n, T, H, J, &E, &M);
+       ecorr[i]=(float)E/(n*n);
+       fprintf(f,"%8.3f\t%8.3f\n",(float)E/(n*n),(float)(M)/(n*n)); 
      };
    
    fflush(f);
    fclose(f);
    
    imprimir(lattice,n);
-   printf("contador: %d\n",*contador); //cantidad de energias que guardo
 
    //Funcion correlacion:
+   contador=niter;
    correlacion(ecorr,contador,T,H);
   
   free(lattice);
   free(tabla);
   free(tabla2);
   free(ecorr);
-  free(contador);
   return 0;
 }
