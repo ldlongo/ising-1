@@ -14,12 +14,12 @@ int main(int argc, char **argv) {
   int n = 32;
   int *lattice = malloc(n * n * sizeof(int));
   float prob = 0.5;                      //prob de llenado 
-  float T = 1.5;                         //temperatura
+  float T = 2.26;                         //temperatura
   float B=(float)1/(float)T;             //beta
   float H=0;                             //campo magnetico
   float J=1;                             //interaccion
-  int ter=10000;                         //pasos de termalizacion
-  int niter =20000;                    //pasos metropoli
+  int ter=1000000;                         //pasos de termalizacion
+  int niter =500000;                    //pasos metropoli
   float E;                               //energia
   int M;                                 //magnetizacion
   float *ecorr= malloc(niter*sizeof(float)); //Ecorrelacion
@@ -57,10 +57,10 @@ int main(int argc, char **argv) {
   M=magnetizacion(lattice,n);
 
   //Termalizacion
-  for (int i = 0; i < ter; i++)
-     {
-       metropolis(lattice, n, T, H, J, &E, &M);
-     };
+  //for (int i = 0; i < ter; i++)
+  //  {
+  //  metropolis(lattice, n, T, H, J, &E, &M);
+  //  };
   
   
   //Imprimo datos en archivo de texto
