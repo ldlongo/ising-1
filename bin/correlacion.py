@@ -5,9 +5,9 @@ from scipy.optimize import curve_fit
 datos={} #energia-magnetizacion
 corr={}  #correlacion
 
-archivo=["1.50-0.00.txt"]
-archivocor=["corr1.50-0.00.txt"]
-key=['1.00']                  #temperatura-campo
+archivo=["2.26-0.00.txt"]
+archivocor=["corr2.26-0.00.txt"]
+key=['2.26']                  #temperatura-campo
 
 #extraigo del archivocorr
 for i in range(0,len(key)):
@@ -26,7 +26,6 @@ for i in range(0,len(key)):
  corr[key[i]]=[xv,yv] 
  f.close()
  
-print corr[key[0]][1]
 #extraigo del archivo
 for i in range(0,len(key)):
  f=open(archivo[i],'r')
