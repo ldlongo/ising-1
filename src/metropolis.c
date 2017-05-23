@@ -200,7 +200,7 @@ int correlacion(float *ecorr, int contador, float T, float H){
   }
   var=(float)sumavar/(contador);
   //covarianza_k:
-  for(int k=0;k<10000;k++)
+  for(int k=0;k<20000;k++)
     {
       sumacov=0;
       cov_k=0;
@@ -212,6 +212,7 @@ int correlacion(float *ecorr, int contador, float T, float H){
       cov_k=(float)sumacov/(contador-k);
       corr=(float)cov_k/var; //correlacion
       fprintf(g,"%d\t\t%f\n",k,corr);
+      printf("%d\t\t%f\n",k,corr);
   }
   
    fflush(g);
