@@ -14,14 +14,16 @@ int main(int argc, char **argv) {
   int n = 10;
   int *lattice = malloc(n * n * sizeof(int));
   float prob = 0.5;                      //prob de llenado 
-  float T = 1.0;                         //temperatura
+  float T = 2.0;                         //temperatura
   float B=(float)1/(float)T;             //beta
   float H=0;                             //campo magnetico
   float J=1;                             //interaccion
   int niter =100000;                       //pasos metropoli
   float E;                               //energia
   int M;                                 //magnetizacion
-  int *Ecorr= malloc(niter*sizeof(int)); //Ecorrelacion
+  float *ecorr= malloc(niter*sizeof(float)); //Ecorrelacion
+  int *contador=malloc(sizeof(int));         //Va a contar la cantidad de pasos que acepto
+  
   //---------------------------------------
   //Tabla1
   //DeltaE vs exp(-BDeltaE)
@@ -64,24 +66,35 @@ int main(int argc, char **argv) {
    f=fopen(filename,"wt");
    fprintf(f," Energia\tMagnetizacion\n");
    fprintf(f,"%8.3f\t%8f\n",(float)E/(n*n),(float)M/(n*n));          //aca imprimo los iniciales Eo y Mo
-  
+
+   //Metropolis
    for (int i = 0; i < niter; i++)
      {
-       metropolis(lattice, n, T, H, J, &E, &M,f);
+       metropolis(lattice, n, T, H, J, &E, &M,f,ecorr,contador);
      };
-
+   
    fflush(f);
    fclose(f);
    
   imprimir(lattice,n);
-  //imprimo Ecorr
-  //for (int i=0;i<niter;i++){
-  // printf("Ecorr [%d]: %d\n",i,Ecorr[i]);
-  // }
+  printf("contador: %d\n",*contador); //cantidad de energias que guardo
+  
+  //Imprimo datos en archivo de texto
+   FILE *g;                                 // Declara puntero a tipo FILE
+   sprintf(filename, "corr%.2f-%.2f.txt",T ,H); // el archivo tiene la temp y el campo
+   g=fopen(filename,"wt");
+   fprintf(g,"k\t\tcorr_k\n");
+
+   //Funcion correlacion: recibe la lista de energias ecorr y me imprime en archivo corr_k(k)
+   correlacion(ecorr,contador,g);
+
+   fflush(g);
+   fclose(g);
   
   free(lattice);
   free(tabla);
   free(tabla2);
-  free(Ecorr);
+  free(ecorr);
+  free(contador);
   return 0;
 }
