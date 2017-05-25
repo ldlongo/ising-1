@@ -14,24 +14,56 @@ int main(int argc, char **argv) {
   int n = 32;
   int *lattice = malloc(n * n * sizeof(int));
   float prob = 0.5;                      //prob de llenado 
-  float T = 2.26;                         //temperatura
-  float B=(float)1/(float)T;             //beta
+  float T;                               //temperatura
+  float B;                               //beta
   float H=0;                             //campo magnetico
   float J=1;                             //interaccion
-  int ter=1000000;                         //pasos de termalizacion
-  int niter =500000;                    //pasos metropoli
-  float E;                               //energia
-  int M;                                 //magnetizacion
-  float *ecorr= malloc(niter*sizeof(float)); //Ecorrelacion
-  int contador;         //Va a contar la cantidad de pasos que acepto
+  int ter=5000;                         //pasos de termalizacion
+  int niter=1000000;                    //pasos metropoli
+  float E;                               //Energia
+  int M;                                 //Magnetizacion
+  float *e= malloc(niter*sizeof(float)); //energia por nodo
+  float *m=malloc(niter*sizeof(float));   //magnetiz por nodo
+  float enerprom;                         //energia promedio por nodo
+  float magnprom;                        //magnetizacion promedio por nodo
+  int contador;                     
   
+  float *tabla=malloc(10*sizeof(float));
+  float *tabla2=malloc(2*sizeof(float));
+
+  //Lleno temp:
+  float ts=5;    //temp sup
+  float ti=0.5;  //temp inf
+  int numtemp=50;  //cant de temp
+  float paso=(float) (ts-ti)/numtemp;//numtemp;
+  float *temp=malloc(numtemp*sizeof(float));
+  
+  for(int t=0;t<numtemp;t++){
+    temp[t]=ts-paso*t;
+  }
+
+  //Archivo donde imprimo temp vs magnprom
+   char filename[64];
+   FILE *h;                                 // Declara puntero a tipo FILE
+   sprintf(filename, "M-T.txt"); // el archivo tiene la temp
+   h=fopen(filename,"wt");
+
+  //Lleno la red una sola vez
+  srand(time(NULL));
+  
+  fill_lattice(lattice, n, prob);
+  
+  //Recorro temp:
+  for (int t=0;t<numtemp;t++){
+    T=temp[t];
+    B=(float)1/(float)T; 
+    
   //---------------------------------------
   //Tabla1
   //DeltaE vs exp(-BDeltaE)
   extern float *lut;
   extern float *lut2;
   
-  float *tabla=malloc(10*sizeof(float));
   for (int i=0;i<5;i++){
     tabla[i]=-8+4*i;
     tabla[i+5]=pow(exp(1.),-B*(-8+4*i));
@@ -40,34 +72,29 @@ int main(int argc, char **argv) {
   //-------------------------------------
   //Tabla2
   //+-2H vs exp(-+2H)
-  float *tabla2=malloc(2*sizeof(float));
+  
   for(int i=0;i<2;i++){
     tabla2[i]=(-1+2*i)*2*H;
     tabla2[i+2]=pow(exp(1.),-(-1+2*i)*(2*H));
   }
   lut2=tabla2;
-  //-------------------------------------
+  //------------------------------------- 
   
-  srand(time(NULL));
- 
-  fill_lattice(lattice, n, prob);
-  
-  E=energia(lattice,n,H, J);
+  E=energia(lattice,n, H, J);
   
   M=magnetizacion(lattice,n);
 
-  //Termalizacion
-  //for (int i = 0; i < ter; i++)
-  //  {
-  //  metropolis(lattice, n, T, H, J, &E, &M);
-  //  };
-  
+  // Termalizacion
+   for (int i = 0; i < ter; i++)
+   {
+   metropolis(lattice, n, T, H, J, &E, &M);
+   };    
   
   //Imprimo datos en archivo de texto
-   char filename[64];
+  // char filename[64];
 
    FILE *f;                                 // Declara puntero a tipo FILE
-   sprintf(filename, "%.2f-%.2f.txt", T,H); // el archivo tiene la temp y el campo
+   sprintf(filename, "%.2f.txt", T); // el archivo tiene la temp
    f=fopen(filename,"wt");
    fprintf(f," Energia\tMagnetizacion\n");
    fprintf(f,"%8.3f\t%8f\n",(float)E/(n*n),(float)M/(n*n));          //aca imprimo los iniciales Eo y Mo
@@ -76,22 +103,44 @@ int main(int argc, char **argv) {
    for (int i = 0; i < niter; i++)
      {
        metropolis(lattice, n, T, H, J, &E, &M);
-       ecorr[i]=(float)E/(n*n);
+       e[i]=(float)E/(n*n);
+       m[i]=(float)M/(n*n);
        fprintf(f,"%8.3f\t%8.3f\n",(float)E/(n*n),(float)(M)/(n*n)); 
      };
    
    fflush(f);
    fclose(f);
-   
+
+   //Imprimo red
    imprimir(lattice,n);
 
+   //Temp
+   printf("T:%f ",temp[t]);
+   
+   //Promedio Energia
+   enerprom=promedio(e,niter);
+   printf("<e>:%f ",enerprom);
+
+   //Promedio Magnetizacion
+   magnprom=fabs(promedio(m,niter));
+   printf("<m>:%f\n ",magnprom);
+
+   fprintf(h,"%8.3f\t%8.3f\n",temp[t],magnprom);
+
    //Funcion correlacion:
-   contador=niter;
-   correlacion(ecorr,contador,T,H);
+   // contador=niter;
+   //correlacion(e,contador,T,H);
+  }
+
+  fflush(h);
+  fclose(h);
   
   free(lattice);
   free(tabla);
   free(tabla2);
-  free(ecorr);
+  free(e);
+  free(m);
+  free(temp);
+  
   return 0;
 }
