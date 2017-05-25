@@ -180,7 +180,7 @@ int correlacion(float *ecorr, int contador, float T, float H){
  //Imprimo datos en archivo de texto
     char filename[64];
    FILE *g;                                 // Declara puntero a tipo FILE
-   sprintf(filename, "corr%.2f-%.2f.txt",T ,H); // el archivo tiene la temp y el campo
+   sprintf(filename, "corr%.2f.txt",T); // el archivo tiene la temp
    g=fopen(filename,"wt");
    fprintf(g,"k\t\tcorr_k\n");
 
@@ -200,7 +200,7 @@ int correlacion(float *ecorr, int contador, float T, float H){
   }
   var=(float)sumavar/(contador);
   //covarianza_k:
-  for(int k=0;k<20000;k++)
+  for(int k=0;k<10000;k++)
     {
       sumacov=0;
       cov_k=0;
@@ -212,11 +212,31 @@ int correlacion(float *ecorr, int contador, float T, float H){
       cov_k=(float)sumacov/(contador-k);
       corr=(float)cov_k/var; //correlacion
       fprintf(g,"%d\t\t%f\n",k,corr);
-      printf("%d\t\t%f\n",k,corr);
   }
   
    fflush(g);
    fclose(g);
    printf("contador de energias: %d\n",contador);
 return 0;
+}
+
+float promedio(float *a, int n){
+    int i;
+    float prom;
+    float desv;
+    
+    salida=malloc(2*sizeof(float));
+    prom=0;
+    desv=0;
+
+    for (i=0;i<n;i=i+1){
+    prom=prom+a[i];   
+    }
+     
+    for (i=0;i<n;i=i+1){ 
+    desv=pow(a[i]-(prom/n),2)+desv;}
+
+    salida[0]=prom/n;
+    salida[1]=sqrt(desv/n);
+    return salida[0];
 }
