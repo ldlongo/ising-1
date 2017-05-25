@@ -136,8 +136,8 @@ int main(int argc, char **argv) {
    fprintf(h,"%8.3f\t%8.3f\n",temp[t],magnprom);
 
    //Funcion correlacion:
-   // contador=niter;
-   //correlacion(e,contador,T,H);
+    contador=niter;
+    correlacion(e,contador,T,H);
   }
 
   fflush(h);
