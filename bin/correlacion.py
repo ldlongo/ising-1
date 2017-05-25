@@ -5,28 +5,25 @@ from scipy.optimize import curve_fit
 datos={} #energia-magnetizacion
 corr={}  #correlacion
 
-archivo=["2.26-0.00.txt"]
-archivocor=["corr2.26-0.00.txt"]
-key=['2.26']                  #temperatura-campo
+temp="temp.txt"
 
-#extraigo del archivocorr
-for i in range(0,len(key)):
- f=open(archivocor[i],'r')
- lines=f.readlines()[1:]
- 
- x=[]
- y=[]
- pasos=[]
- for line in lines: 
-      p = line.split()
-      x.append(float(p[0]))
-      y.append(float(p[1]))
- xv=np.array(x)
- yv=np.array(y)
- corr[key[i]]=[xv,yv] 
- f.close()
- 
-#extraigo del archivo
+#extraigo temperaturas
+f=open(temp,'r')
+lines=f.readlines()[1:]
+
+key=[]
+archivo=[]
+archivocorr=[]
+
+for line in lines:
+    p=line.split()
+    key.append("%0.2f" % float(p[0]))
+    archivo.append("%0.2f" % float(p[0])+".txt")
+    archivocorr.append("corr"+"%0.2f" % float(p[0])+".txt")
+
+
+#extraigo del archivo energia y magnetizacion
+
 for i in range(0,len(key)):
  f=open(archivo[i],'r')
  lines=f.readlines()[1:]
@@ -42,22 +39,53 @@ for i in range(0,len(key)):
  mv=np.array(m)
  datos[key[i]]=[ev,mv] 
  f.close()
+ 
+#extraigo del archivocorr
+for i in range(0,len(key)):
+ f=open(archivocorr[i],'r')
+ lines=f.readlines()[1:]
+ 
+ x=[]
+ y=[]
+ pasos=[]
+ for line in lines: 
+      p = line.split()
+      x.append(float(p[0]))
+      y.append(float(p[1]))
+ xv=np.array(x)
+ yv=np.array(y)
+ corr[key[i]]=[xv,yv] 
+ f.close()
+
 
 #vector de pasos 
 for i in range(0,len(datos[key[0]][0])):
  pasos.append(i)
- 
-#Grafico Energia      
+
+#colores
+color=['bo','ro','yo','mo','co','go'] 
+
+#Grafico Energia 
 plt.figure(0)
-plt.plot(pasos,datos[key[0]][0],'bo')
+for i in range(0,len(key)):  
+ plt.plot(pasos,datos[key[i]][0],color[i],label=key[i])
 plt.ylabel("Energia")
+plt.legend(numpoints=1)
+
 #Grafico Magnetizacion      
 plt.figure(1)
-plt.plot(pasos,datos[key[0]][1],'ro')
-plt.ylabel("Magnetizacion") 
-#Grafico correlacion
+for i in range(0,len(key)):
+ plt.plot(pasos,datos[key[i]][1],color[i],label=key[i])
+plt.ylabel("Magnetizacion")
+plt.legend(numpoints=1)
+
+
+#Grafico Correlacion
 plt.figure(2)
-plt.plot(corr[key[0]][0],corr[key[0]][1],'mo')
+for i in range(0,len(key)):
+ plt.plot(corr[key[i]][0],corr[key[i]][1],color[i],label=key[i])
 plt.ylabel("Correlacion")
+plt.legend(numpoints=1)
 
 plt.show()
+
