@@ -31,22 +31,31 @@ int main(int argc, char **argv) {
   float *tabla=malloc(10*sizeof(float));
   float *tabla2=malloc(2*sizeof(float));
 
-  //Lleno temp:
-  float ts=5;    //temp sup
+  //Lleno temp e imprimo en archivo externo temp.txt
+  char filename[64];
+  FILE *h;
+  sprintf(filename, "temp.txt");
+  h=fopen(filename,"wt");
+  fprintf(h,"Temperaturas\n");
+  
+  float ts=3;    //temp sup
   float ti=0.5;  //temp inf
-  int numtemp=50;  //cant de temp
+  int numtemp=6;  //cant de temp
   float paso=(float) (ts-ti)/numtemp;//numtemp;
   float *temp=malloc(numtemp*sizeof(float));
-  
+ 
   for(int t=0;t<numtemp;t++){
     temp[t]=ts-paso*t;
+    fprintf(h,"%f\n",temp[t]);
   }
+  fflush(h);
+  fclose(h);
 
+  
   //Archivo donde imprimo temp vs magnprom
-   char filename[64];
-   FILE *h;                                 // Declara puntero a tipo FILE
-   sprintf(filename, "M-T.txt"); // el archivo tiene la temp
-   h=fopen(filename,"wt");
+  // char filename[64];
+  sprintf(filename, "M-T.txt"); // el archivo tiene la temp
+  h=fopen(filename,"wt");
 
   //Lleno la red una sola vez
   srand(time(NULL));
@@ -91,7 +100,6 @@ int main(int argc, char **argv) {
    };    
   
   //Imprimo datos en archivo de texto
-  // char filename[64];
 
    FILE *f;                                 // Declara puntero a tipo FILE
    sprintf(filename, "%.2f.txt", T); // el archivo tiene la temp
