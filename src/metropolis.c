@@ -224,6 +224,7 @@ float promedio(float *a, int n){
     int i;
     float prom;
     float desv;
+    float *salida;
     
     salida=malloc(2*sizeof(float));
     prom=0;
