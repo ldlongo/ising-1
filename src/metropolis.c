@@ -200,7 +200,7 @@ int correlacion(float *ecorr, int contador, float T, float H){
   }
   var=(float)sumavar/(contador);
   //covarianza_k:
-  for(int k=0;k<10000;k++)
+  for(int k=0;k<800000;k+=1000)
     {
       sumacov=0;
       cov_k=0;
@@ -216,7 +216,6 @@ int correlacion(float *ecorr, int contador, float T, float H){
   
    fflush(g);
    fclose(g);
-   printf("contador de energias: %d\n",contador);
 return 0;
 }
 
