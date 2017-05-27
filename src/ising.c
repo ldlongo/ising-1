@@ -26,6 +26,8 @@ int main(int argc, char **argv) {
   float *m=malloc(niter*sizeof(float));   //magnetiz por nodo
   float enerprom;                         //energia promedio por nodo
   float magnprom;                        //magnetizacion promedio por nodo
+  float enerdisp;                        //error en la energia prom
+  float magndisp;                        //error en la magn prom
   int contador;                     
   
   float *tabla=malloc(10*sizeof(float));
@@ -38,9 +40,9 @@ int main(int argc, char **argv) {
   h=fopen(filename,"wt");
   fprintf(h,"Temperaturas\n");
   
-  float ts=3;    //temp sup
+  float ts=4.5;    //temp sup
   float ti=0.5;  //temp inf
-  int numtemp=6;  //cant de temp
+  int numtemp=40;  //cant de temp
   float paso=(float) (ts-ti)/numtemp;//numtemp;
   float *temp=malloc(numtemp*sizeof(float));
  
@@ -56,11 +58,17 @@ int main(int argc, char **argv) {
   // char filename[64];
   sprintf(filename, "M-T.txt"); // el archivo tiene la temp
   h=fopen(filename,"wt");
+  fprintf(h,"T\t<m>\td<m>\n");
+
+  //Archivo donde imprimo temp s energiaprom
+  FILE *k;
+  sprintf(filename,"E-T.txt");
+  k=fopen(filename,"wt");
+  fprintf(k,"T\t<e>\td<e>\n");
 
   //Lleno la red una sola vez
-  srand(time(NULL));
-  
-  fill_lattice(lattice, n, prob);
+  //srand(time(NULL));
+  //fill_lattice(lattice, n, prob);
   
   //Recorro temp:
   for (int t=0;t<numtemp;t++){
@@ -87,7 +95,12 @@ int main(int argc, char **argv) {
     tabla2[i+2]=pow(exp(1.),-(-1+2*i)*(2*H));
   }
   lut2=tabla2;
-  //------------------------------------- 
+  //-------------------------------------
+
+  //Lleno la red en cada temperatura
+  srand(time(NULL));
+  
+  fill_lattice(lattice, n, prob);
   
   E=energia(lattice,n, H, J);
   
@@ -126,22 +139,29 @@ int main(int argc, char **argv) {
    printf("T:%f ",temp[t]);
    
    //Promedio Energia
-   enerprom=promedio(e,niter);
-   printf("<e>:%f ",enerprom);
+   enerprom=promedio(e,niter)[0];
+   enerdisp=promedio(e,niter)[1];
+   printf("<e>:%f d<e>:%f ",enerprom,enerdisp);
+   
+   fprintf(k,"%4.3f\t%4.3f\t%4.3f\n",temp[t],enerprom,enerdisp);
 
    //Promedio Magnetizacion
-   magnprom=fabs(promedio(m,niter));
-   printf("<m>:%f\n ",magnprom);
+   magnprom=fabs(promedio(m,niter)[0]);
+   magndisp=promedio(e,niter)[1];
+   printf("<m>:%f d<m>:%f\n ",magnprom,magndisp);
 
-   fprintf(h,"%8.3f\t%8.3f\n",temp[t],magnprom);
+   fprintf(h,"%4.3f\t%4.3f\t%4.3f\n",temp[t],magnprom,magndisp);
 
    //Funcion correlacion:
-    contador=niter;
-    correlacion(e,contador,T,H);
+   // contador=niter;
+   // correlacion(e,contador,T,H);
   }
 
   fflush(h);
   fclose(h);
+
+  fflush(k);
+  fclose(k);
   
   free(lattice);
   free(tabla);
