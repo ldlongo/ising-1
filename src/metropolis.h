@@ -8,6 +8,6 @@ int energia(int *lattice, int n, float H, float J);
 int magnetizacion(int *lattice,int n);
 int CPC(int *lattice, int n, int i, int j, int* spinborde);
 int correlacion(float *e, int contador, float T, float H);
-float promedio(float *a, int n);
+float *promedio(float *a, int n);
 #endif
 
