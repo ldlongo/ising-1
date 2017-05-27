@@ -219,7 +219,7 @@ int correlacion(float *ecorr, int contador, float T, float H){
 return 0;
 }
 
-float promedio(float *a, int n){
+float *promedio(float *a, int n){
     int i;
     float prom;
     float desv;
@@ -238,5 +238,5 @@ float promedio(float *a, int n){
 
     salida[0]=prom/n;
     salida[1]=sqrt(desv/n);
-    return salida[0];
+    return salida;
 }
