@@ -142,7 +142,7 @@ int main(int argc, char **argv) {
    fprintf(k,"%4.3f\t%4.3f\t%4.3f\n",temp[t],enerprom,enerdisp);
 
    //Promedio Magnetizacion
-   magnprom=fabs(promedio(m,niter)[0]);
+   magnprom=promedio(m,niter)[0];
    magndisp=promedio(e,niter)[1];
    printf("<m>:%f d<m>:%f\n ",magnprom,magndisp);
 
