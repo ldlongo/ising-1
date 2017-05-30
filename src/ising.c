@@ -67,8 +67,8 @@ int main(int argc, char **argv) {
   fprintf(k,"T\t<e>\td<e>\n");
 
   //Lleno la red una sola vez
-  //srand(time(NULL));
-  //fill_lattice(lattice, n, prob);
+  srand(time(NULL));
+  fill_lattice(lattice, n, prob);
   
   //Recorro temp:
   for (int t=0;t<numtemp;t++){
@@ -96,10 +96,6 @@ int main(int argc, char **argv) {
   }
   lut2=tabla2;
   //-------------------------------------
-
-  //Lleno la red en cada temperatura
-  srand(time(NULL));
-  
   fill_lattice(lattice, n, prob);
   
   E=energia(lattice,n, H, J);
