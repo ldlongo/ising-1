@@ -16,10 +16,10 @@ int main(int argc, char **argv) {
   float prob = 0.5;                      //prob de llenado 
   float T;                               //temperatura
   float B;                               //beta
-  float H=0;                             //campo magnetico
+  float H=0.0005;                             //campo magnetico
   float J=1;                             //interaccion
   int ter=5000;                         //pasos de termalizacion
-  int niter=3000000;                    //pasos metropoli
+  int niter=5000000;                    //pasos metropoli
   float E;                               //Energia
   int M;                                 //Magnetizacion
   float *e= malloc(niter*sizeof(float)); //energia por nodo
@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
   
   float ts=4.5;    //temp sup
   float ti=0.5;  //temp inf
-  int numtemp=50;  //cant de temp
+  int numtemp=200;  //cant de temp
   float paso=(float) (ts-ti)/numtemp;//numtemp;
   float *temp=malloc(numtemp*sizeof(float));
  
@@ -67,8 +67,8 @@ int main(int argc, char **argv) {
   fprintf(k,"T\t<e>\td<e>\n");
 
   //Lleno la red una sola vez
-  // srand(time(NULL));
-  //fill_lattice(lattice, n, prob);
+   srand(time(NULL));
+   fill_lattice(lattice, n, prob);
   
   //Recorro temp:
   for (int t=0;t<numtemp;t++){
@@ -98,8 +98,8 @@ int main(int argc, char **argv) {
   //-------------------------------------
   
   //Lleno la red en cada temp
-  srand(time(NULL));
-  fill_lattice(lattice, n, prob);
+  //srand(time(NULL));
+  //fill_lattice(lattice, n, prob);
   
   E=energia(lattice,n, H, J);
   
@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
   //Imprimo datos en archivo de texto
 
    FILE *f;                                 // Declara puntero a tipo FILE
-   sprintf(filename, "%.2f.txt", T); // el archivo tiene la temp
+   sprintf(filename, "%.4f.txt", T); // el archivo tiene la temp
    f=fopen(filename,"wt");
    fprintf(f," Energia\tMagnetizacion\n");
    fprintf(f,"%8.3f\t%8f\n",(float)E/(n*n),(float)M/(n*n));          //aca imprimo los iniciales Eo y Mo
@@ -132,22 +132,22 @@ int main(int argc, char **argv) {
    fclose(f);
 
    //Imprimo red
-   imprimir(lattice,n);
+   //imprimir(lattice,n);
 
    //Temp
-   printf("T:%f ",temp[t]);
+   //printf("T:%f ",temp[t]);
    
    //Promedio Energia
    enerprom=promedio(e,n,niter)[0];
    enerdisp=promedio(e,n,niter)[1];
-   printf("<e>:%f d<e>:%f ",enerprom,enerdisp);
+   //printf("<e>:%f d<e>:%f ",enerprom,enerdisp);
    
    fprintf(k,"%4.3f\t%4.3f\t%4.3f\n",temp[t],enerprom,enerdisp);
 
    //Promedio Magnetizacion
    magnprom=promedio(m,n,niter)[0];
    magndisp=promedio(e,n,niter)[1];
-   printf("<m>:%f d<m>:%f\n ",magnprom,magndisp);
+   //printf("<m>:%f d<m>:%f\n ",magnprom,magndisp);
 
    fprintf(h,"%4.3f\t%4.3f\t%4.3f\n",temp[t],magnprom,magndisp);
 
