@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
   float H=0;                             //campo magnetico
   float J=1;                             //interaccion
   int ter=5000;                         //pasos de termalizacion
-  int niter=1000000;                    //pasos metropoli
+  int niter=3000000;                    //pasos metropoli
   float E;                               //Energia
   int M;                                 //Magnetizacion
   float *e= malloc(niter*sizeof(float)); //energia por nodo
@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
   
   float ts=4.5;    //temp sup
   float ti=0.5;  //temp inf
-  int numtemp=40;  //cant de temp
+  int numtemp=50;  //cant de temp
   float paso=(float) (ts-ti)/numtemp;//numtemp;
   float *temp=malloc(numtemp*sizeof(float));
  
@@ -67,8 +67,8 @@ int main(int argc, char **argv) {
   fprintf(k,"T\t<e>\td<e>\n");
 
   //Lleno la red una sola vez
-  srand(time(NULL));
-  fill_lattice(lattice, n, prob);
+  // srand(time(NULL));
+  //fill_lattice(lattice, n, prob);
   
   //Recorro temp:
   for (int t=0;t<numtemp;t++){
@@ -96,6 +96,9 @@ int main(int argc, char **argv) {
   }
   lut2=tabla2;
   //-------------------------------------
+  
+  //Lleno la red en cada temp
+  srand(time(NULL));
   fill_lattice(lattice, n, prob);
   
   E=energia(lattice,n, H, J);
@@ -135,15 +138,15 @@ int main(int argc, char **argv) {
    printf("T:%f ",temp[t]);
    
    //Promedio Energia
-   enerprom=promedio(e,niter)[0];
-   enerdisp=promedio(e,niter)[1];
+   enerprom=promedio(e,n,niter)[0];
+   enerdisp=promedio(e,n,niter)[1];
    printf("<e>:%f d<e>:%f ",enerprom,enerdisp);
    
    fprintf(k,"%4.3f\t%4.3f\t%4.3f\n",temp[t],enerprom,enerdisp);
 
    //Promedio Magnetizacion
-   magnprom=promedio(m,niter)[0];
-   magndisp=promedio(e,niter)[1];
+   magnprom=promedio(m,n,niter)[0];
+   magndisp=promedio(e,n,niter)[1];
    printf("<m>:%f d<m>:%f\n ",magnprom,magndisp);
 
    fprintf(h,"%4.3f\t%4.3f\t%4.3f\n",temp[t],magnprom,magndisp);
