@@ -219,8 +219,9 @@ int correlacion(float *ecorr, int contador, float T, float H){
 return 0;
 }
 
-float *promedio(float *a, int n){
+float *promedio(float *a, int n, int niter){
     int i;
+    int contador;
     float prom;
     float desv;
     float *salida;
@@ -228,15 +229,17 @@ float *promedio(float *a, int n){
     salida=malloc(2*sizeof(float));
     prom=0;
     desv=0;
+    contador=0;
 
-    for (i=0;i<n;i=i+1){
-    prom=prom+a[i];   
+    for (i=0;i<niter;i+=2*n*n){
+    prom=prom+a[i];
+    contador=contador+1;
     }
-     
-    for (i=0;i<n;i=i+1){ 
-    desv=pow(a[i]-(prom/n),2)+desv;}
+    
+    for (i=0;i<niter;i+=2*n*n){ 
+    desv=pow(a[i]-(prom/contador),2)+desv;}
 
-    salida[0]=prom/n;
-    salida[1]=sqrt(desv/n);
+    salida[0]=prom/contador;
+    salida[1]=sqrt(desv/contador);
     return salida;
 }
