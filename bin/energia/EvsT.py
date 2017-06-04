@@ -28,11 +28,26 @@ for i in range(0,1):
  energia[i]=[tv,ev,dev] 
  f.close()
 
-#Grafico MvsT
+#Energia teorica
+H=1; #campo 
+temp=np.linspace(0.1, 5.0, 50)
+eteorica=[]
+
+for i in range(0,len(temp)):
+ #mteorica.append((1/magnet[0][0][i])*np.tanh(1/magnet[0][0][i]))
+ eteorica.append(-H*np.tanh(H/temp[i])) #recordar que e es
+                                             #-H*tanh(H*beta)
+ 
+#Grafico eteorica
+plt.plot(temp,eteorica,'g',label="solucion exacta")
+  
+
+#Grafico EvsT
 plt.errorbar(energia[0][0], energia[0][1], energia[0][2],color='r')
 plt.plot(energia[0][0],energia[0][1],'ro')
-plt.plot(energia[0][0],energia[0][1],'b')
+plt.plot(energia[0][0],energia[0][1],'b',label="solucion numerica")
 plt.xlabel("Temperatura")
-plt.ylabel("Energia promedio <m>")
+plt.ylabel("Energia promedio <e>")
+plt.legend(loc='upper left')
 plt.show()
 
