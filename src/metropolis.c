@@ -75,13 +75,15 @@ int flip(int *lattice, int n, float T, int idx, float H, float J, float *pE, int
 
    //Calculo la variacion de energia y magnetizacion  si lo diera vuelta:
     
-    int DeltaE=2*J*sij*(spinborde[0]+spinborde[1]+spinborde[2]+spinborde[3]);
+    int DeltaE=2*J*sij*(spinborde[0]+spinborde[1]+spinborde[2]+spinborde[3])+H*2*sij;
+    //int DeltaE=H*2*sij;
     int DeltaM=-2*sij; //el negativo es porque si hay un +1 el cambio es del signo opuesto.
 
    //Calculo Beta*DeltaT y pi:
     
     int idxtabla2=(sij+1+4)/2; // si sij=-1 corresponde con la pos 2 y si sij=1 con la pos 3 de la tabla 2 
-    float pi=lut[5+(DeltaE+8)/4]*lut2[idxtabla2];
+    // float pi=lut[5+(DeltaE+8)/4]*lut2[idxtabla2];
+    float pi=lut2[idxtabla2];//para J=0
 
    //Acepto o Rechazo:
     
@@ -122,7 +124,8 @@ int energia(int *lattice, int n, float H, float J){
     
            int  sij=lattice[i*n+j]; //el actual 
 	   //Energia acumulo: pongo el dos en  H*2*sij  para no afectar al termino que tiene el campo magnetico luego cuando hago E=E/2.
-           E=E-J*sij*(spinborde[0]+spinborde[1]+spinborde[2]+spinborde[3])-H*2*sij; 
+	    E=E-J*sij*(spinborde[0]+spinborde[1]+spinborde[2]+spinborde[3])-H*2*sij;
+	   // E=E-H*2*sij; 
       }
      }
  //Imprimo la energia
@@ -243,3 +246,4 @@ float *promedio(float *a, int n, int niter){
     salida[1]=sqrt(desv/contador);
     return salida;
 }
+
