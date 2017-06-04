@@ -28,11 +28,27 @@ for i in range(0,1):
  magnet[i]=[tv,mv,dmv] 
  f.close()
 
+#Magnet teorica
+H=1#campo
+temp=np.linspace(0.1, 5.0, 50)
+mteorica=[]
+
+for i in range(0,len(temp)):
+ #mteorica.append((1/magnet[0][0][i])*np.tanh(1/magnet[0][0][i]))
+ mteorica.append(np.tanh(H/temp[i])) #recordar que en el argumento es
+                                             #tanh(H*beta)
+ 
+#Grafico eteorica
+plt.plot(temp,mteorica,'g',label="solucion exacta")
+ 
+
 #Grafico MvsT
 plt.errorbar(magnet[0][0], magnet[0][1], magnet[0][2],color='r')
 plt.plot(magnet[0][0],magnet[0][1],'ro')
-plt.plot(magnet[0][0],magnet[0][1],'b')
+plt.plot(magnet[0][0],magnet[0][1],'b',label="solucion numerica")
 plt.xlabel("Temperatura")
 plt.ylabel("Magnetizacion promedio <m>")
+
+plt.legend()
 plt.show()
 
