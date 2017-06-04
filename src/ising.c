@@ -16,8 +16,8 @@ int main(int argc, char **argv) {
   float prob = 0.5;                      //prob de llenado 
   float T;                               //temperatura
   float B;                               //beta
-  float H=0.0005;                             //campo magnetico
-  float J=1;                             //interaccion
+  float H=1;                             //campo magnetico
+  float J=0;                             //interaccion
   int ter=5000;                         //pasos de termalizacion
   int niter=5000000;                    //pasos metropoli
   float E;                               //Energia
@@ -33,8 +33,9 @@ int main(int argc, char **argv) {
   float *tabla=malloc(10*sizeof(float));
   float *tabla2=malloc(2*sizeof(float));
 
+  
   //Lleno temp e imprimo en archivo externo temp.txt
-  char filename[64];
+   char filename[64];
   FILE *h;
   sprintf(filename, "temp.txt");
   h=fopen(filename,"wt");
@@ -42,7 +43,7 @@ int main(int argc, char **argv) {
   
   float ts=4.5;    //temp sup
   float ti=0.5;  //temp inf
-  int numtemp=200;  //cant de temp
+  int numtemp=10;  //cant de temp
   float paso=(float) (ts-ti)/numtemp;//numtemp;
   float *temp=malloc(numtemp*sizeof(float));
  
@@ -52,7 +53,7 @@ int main(int argc, char **argv) {
   }
   fflush(h);
   fclose(h);
-
+  
   
   //Archivo donde imprimo temp vs magnprom
   // char filename[64];
@@ -78,23 +79,28 @@ int main(int argc, char **argv) {
   //---------------------------------------
   //Tabla1
   //DeltaE vs exp(-BDeltaE)
-  extern float *lut;
+  // extern float *lut;
   extern float *lut2;
   
   for (int i=0;i<5;i++){
     tabla[i]=-8+4*i;
     tabla[i+5]=pow(exp(1.),-B*(-8+4*i));
-  }
-  lut=tabla;
+   }
+   lut=tabla;
   //-------------------------------------
   //Tabla2
   //+-2H vs exp(-+2H)
   
   for(int i=0;i<2;i++){
     tabla2[i]=(-1+2*i)*2*H;
-    tabla2[i+2]=pow(exp(1.),-(-1+2*i)*(2*H));
+    tabla2[i+2]=pow(exp(1.),(-B)*(-1+2*i)*(2*H));
   }
   lut2=tabla2;
+
+  //Imprimo la tabla 2
+  for (int i=0;i<2;i++){
+    printf("%f\t%f\n",tabla2[i],tabla2[i+2]);
+  }
   //-------------------------------------
   
   //Lleno la red en cada temp
