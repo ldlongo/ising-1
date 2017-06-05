@@ -42,7 +42,7 @@ int imprimir(int *lattice, int n){
     }
     printf("\n");  
     return 0;
-}
+ }
 
 
 int metropolis(int *lattice, int n, float T, float H, float J, float *pE, int *pM) {
@@ -82,8 +82,8 @@ int flip(int *lattice, int n, float T, int idx, float H, float J, float *pE, int
    //Calculo Beta*DeltaT y pi:
     
     int idxtabla2=(sij+1+4)/2; // si sij=-1 corresponde con la pos 2 y si sij=1 con la pos 3 de la tabla 2 
-    // float pi=lut[5+(DeltaE+8)/4]*lut2[idxtabla2];
-    float pi=lut2[idxtabla2];//para J=0
+    float pi=lut[5+(DeltaE+8)/4]*lut2[idxtabla2];
+    //float pi=lut2[idxtabla2];//para J=0
 
    //Acepto o Rechazo:
     
@@ -170,7 +170,7 @@ int CPC(int *lattice, int n, int i, int j, int* spinborde){
    return 0;
 }
 
-int correlacion(float *ecorr, int contador, float T, float H){
+int correlacion(float *ecorr, int contador, int n, float T, float H, float J){
   int k=0;
   float sumacov;
   float sumavar=0;
@@ -183,7 +183,7 @@ int correlacion(float *ecorr, int contador, float T, float H){
  //Imprimo datos en archivo de texto
     char filename[64];
    FILE *g;                                 // Declara puntero a tipo FILE
-   sprintf(filename, "corr%.2f.txt",T); // el archivo tiene la temp
+   sprintf(filename, "corr%d-%.2f-%.2f.txt",n,T,J); // el archivo tiene el tamano, T, y J
    g=fopen(filename,"wt");
    fprintf(g,"k\t\tcorr_k\n");
 
@@ -195,15 +195,16 @@ int correlacion(float *ecorr, int contador, float T, float H){
     sumaprom=sumaprom+ecorr[i];
   }
   promedio=(float)sumaprom/(contador);
-  
+ 
   //varianza:
   sumavar=0;
   for(int i=0;i<contador;i++){
     sumavar=sumavar+(ecorr[i]-promedio)*(ecorr[i]-promedio);
   }
   var=(float)sumavar/(contador);
+  
   //covarianza_k:
-  for(int k=0;k<800000;k+=1000)
+  for(int k=0;k<100000;k+=100)
     {
       sumacov=0;
       cov_k=0;
