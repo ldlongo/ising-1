@@ -16,7 +16,8 @@ int main(int argc, char **argv) {
   float T;                               //temperatura
   float B;                               //beta
   float H=0;                             //campo magnetico
-  float J;                             //interaccion
+  float J;                             //interaccion ferro primeros vecinos
+  float K=-1;                          //interaccion antiferro diagonal
   int ter=10000;                         //pasos de termalizacion
   int niter=1000000;                    //pasos metropoli
   float E;                               //Energia
@@ -43,9 +44,9 @@ int main(int argc, char **argv) {
   h=fopen(filename,"wt");
   fprintf(h,"Temperaturas\n");
   
-  float ts=2.0;    //temp sup
-  float ti=1.9;  //temp inf
-  int numtemp=50;  //cant de temp
+  float ts=5.5;    //temp sup
+  float ti=0.5;  //temp inf
+  int numtemp=5;  //cant de temp
   float paso=(float) (ts-ti)/numtemp;//numtemp;
   float *temp=malloc(numtemp*sizeof(float));
  
@@ -61,7 +62,7 @@ int main(int argc, char **argv) {
   h=fopen(filename,"wt");
   fprintf(h,"Tamanos\n");
   
-  int ns=8;    //tamano sup
+  int ns=16;    //tamano sup
   int numtamano=1;  //cant de tamanos
   int *tamano=malloc(numtamano*sizeof(int));
  
@@ -181,14 +182,14 @@ int main(int argc, char **argv) {
   // srand(time(NULL));
   //fill_lattice(lattice, n, prob);
   
-  E=energia(lattice,n, H, J);
+  E=energia(lattice,n, H, J, K);
   
   M=magnetizacion(lattice,n);
 
   // Termalizacion
    for (i = 0; i < ter; i++)
    {
-   metropolis(lattice, n, T, H, J, &E, &M);
+     metropolis(lattice, n, T, H, J, K, &E, &M);
    };    
   
   //Imprimo datos en archivo de texto
@@ -202,7 +203,7 @@ int main(int argc, char **argv) {
    //Metropolis
    for (i = 0; i < niter; i++)
      {
-       metropolis(lattice, n, T, H, J, &E, &M);
+       metropolis(lattice, n, T, H, J, K, &E, &M);
        e[i]=(float)E/(n*n);
        E2[i]=(float)(E*E);
        m[i]=(float)M/(n*n);
@@ -214,17 +215,17 @@ int main(int argc, char **argv) {
    //fclose(f);
 
    //Imprimo red
-   //imprimir(lattice,n);
+   imprimir(lattice,n);
 
    //Temp
-   //printf("T:%f ",temp[t]);
+   printf("T:%f ",temp[t]);
    
    //Promedio Energia
    E2prom=promedio(E2,n,niter)[0];
    enerprom=promedio(e,n,niter)[0];
    enerdisp=promedio(e,n,niter)[1];
    cv=(E2prom-(enerprom*enerprom*n*n*n*n))/(T*T*n*n);
-   //printf("<e>:%f d<e>:%f ",enerprom,enerdisp);
+   printf("<e>:%f d<e>:%f ",enerprom,enerdisp);
    
    fprintf(k,"%4.3f\t%4.3f\t%4.3f\t%4.3f\n",T,enerprom,enerdisp,cv);
 
@@ -233,7 +234,7 @@ int main(int argc, char **argv) {
    magnprom=promedio(m,n,niter)[0];
    magndisp=promedio(m,n,niter)[1];
    suscep=(M2prom-(magnprom*magnprom*n*n*n*n))/(T);
-   //printf("<m>:%f d<m>:%f\n ",magnprom,magndisp);
+   printf("<m>:%f d<m>:%f\n ",magnprom,magndisp);
 
    fprintf(h,"%4.3f\t%4.3f\t%4.3f\t%4.3f\n",temp[t],magnprom,magndisp,suscep);
 
