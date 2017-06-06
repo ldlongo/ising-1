@@ -45,11 +45,11 @@ int imprimir(int *lattice, int n){
  }
 
 
-int metropolis(int *lattice, int n, float T, float H, float J, float *pE, int *pM) {
+int metropolis(int *lattice, int n, float T, float H, float J, float K, float *pE, int *pM) {
   //Elijo spin random
   int idx=pick_site(lattice, n);
   //Me fijo s hago o no el flip
-  flip(lattice, n, T, idx, H, J, pE, pM);
+  flip(lattice, n, T, idx, H, J, K, pE, pM);
 return 0;
 }
 
@@ -61,7 +61,7 @@ int pick_site(int *lattice, int n) {
   return idx;
 }
 
-int flip(int *lattice, int n, float T, int idx, float H, float J, float *pE, int *pM) {
+int flip(int *lattice, int n, float T, int idx, float H, float J, float K, float *pE, int *pM) {
    extern float *lut; //variable externa puntero a tabla. Evita calcular las exponenciales cada vez que se llama a flip.
    extern float *lut2;
 
@@ -69,13 +69,13 @@ int flip(int *lattice, int n, float T, int idx, float H, float J, float *pE, int
    
     int i=idx/n;//Paso de idx a i, j
     int j=idx%n;
-    int *spinborde=malloc(4*sizeof(int));
+    int *spinborde=malloc(8*sizeof(int));
     CPC(lattice, n, i, j, spinborde);
     int  sij=lattice[i*n+j]; //el actual
 
    //Calculo la variacion de energia y magnetizacion  si lo diera vuelta:
     
-    int DeltaE=2*J*sij*(spinborde[0]+spinborde[1]+spinborde[2]+spinborde[3])+H*2*sij;
+    int DeltaE=2*J*sij*(spinborde[0]+spinborde[1]+spinborde[2]+spinborde[3])+H*2*sij+2*K*sij*(spinborde[4]+spinborde[5]+spinborde[6]+spinborde[7]);
     //int DeltaE=H*2*sij;
     int DeltaM=-2*sij; //el negativo es porque si hay un +1 el cambio es del signo opuesto.
 
@@ -109,9 +109,9 @@ int flip(int *lattice, int n, float T, int idx, float H, float J, float *pE, int
   return 0;
 }
 
-int energia(int *lattice, int n, float H, float J){
+int energia(int *lattice, int n, float H, float J, float K){
   int E=0;
-  int *spinborde=malloc(4*sizeof(int));
+  int *spinborde=malloc(8*sizeof(int));
   //Todo esto lo mando a una funcion energia(lattice,n)
   for (int i=0;i<n;i++)
     {
@@ -124,7 +124,7 @@ int energia(int *lattice, int n, float H, float J){
     
            int  sij=lattice[i*n+j]; //el actual 
 	   //Energia acumulo: pongo el dos en  H*2*sij  para no afectar al termino que tiene el campo magnetico luego cuando hago E=E/2.
-	    E=E-J*sij*(spinborde[0]+spinborde[1]+spinborde[2]+spinborde[3])-H*2*sij;
+	   E=E-J*sij*(spinborde[0]+spinborde[1]+spinborde[2]+spinborde[3])-H*2*sij-K*sij*(spinborde[4]+spinborde[5]+spinborde[6]+spinborde[7]);
 	   // E=E-H*2*sij; 
       }
      }
@@ -161,12 +161,21 @@ int CPC(int *lattice, int n, int i, int j, int* spinborde){
    int  sl=lattice[i*n+jl];
    int  su=lattice[iu*n+j];
    int  sd=lattice[id*n+j];
-
+   int  sul=lattice[iu*n+jl];
+   int  sur=lattice[iu*n+jr];
+   int  sdl=lattice[id*n+jl];
+   int  sdr=lattice[id*n+jr];
+     
    spinborde[0]=lattice[i*n+jl]; //sl
    spinborde[1]=lattice[i*n+jr]; //sr
    spinborde[2]=lattice[iu*n+j];//su
    spinborde[3]=lattice[id*n+j]; //sd
-       
+   
+   spinborde[4]=lattice[iu*n+jl]; //sul
+   spinborde[5]=lattice[iu*n+jr]; //sur
+   spinborde[6]=lattice[id*n+jl]; //sdl
+   spinborde[7]=lattice[id*n+jr]; //sdr
+   
    return 0;
 }
 
