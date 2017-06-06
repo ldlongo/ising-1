@@ -7,7 +7,9 @@ corr={}  #correlacion
 
 temp="temp.txt"
 #J acoplamiento
-J=0.20
+J=1.00
+#n tamano
+n=32
 #extraigo temperaturas
 f=open(temp,'r')
 lines=f.readlines()[1:]
@@ -19,27 +21,9 @@ archivocorr=[]
 for line in lines:
     p=line.split()
     key.append("%0.2f" % float(p[0]))
-    archivo.append("%0.2f" % float(p[0])+"-"+"%0.2f" % float(J)+".txt")
-    archivocorr.append("corr"+"%0.2f" % float(p[0])+"-"+"%0.2f" % float(J)+".txt")
+    #archivo.append("%0.2f" % float(p[0])+"-"+"%0.2f" % float(J)+".txt")
+    archivocorr.append("corr"+"%d" %int(n)+"-"+"%0.2f" % float(p[0])+"-"+"%0.2f" % float(J)+".txt")
 
-
-#extraigo del archivo energia y magnetizacion
-
-for i in range(0,len(key)):
- f=open(archivo[i],'r')
- lines=f.readlines()[1:]
- 
- e=[]
- m=[]
- pasos=[]
- for line in lines: 
-      p = line.split()
-      e.append(float(p[0]))
-      m.append(float(p[1]))
- ev=np.array(e)
- mv=np.array(m)
- datos[key[i]]=[ev,mv] 
- f.close()
 
 #extraigo del archivocorr
 for i in range(0,len(key)):
@@ -59,31 +43,9 @@ for i in range(0,len(key)):
  f.close()
 
 
-#vector de pasos 
-for i in range(0,len(datos[key[0]][0])):
- pasos.append(i)
-
 #colores
-color=['bo','ro','yo','mo','co','go','ko','ro'] 
+color=['bo','ro','yo','mo','co','go','ko','ro','bo','ro'] 
 
-'''
-#Grafico Energia 
-plt.figure(0)
-for i in range(0,len(key)):  
- plt.plot(pasos,datos[key[i]][0],color[i],label=key[i])
-plt.ylabel("Energia")
-plt.legend(numpoints=1)
-'''
-'''
-#Grafico Magnetizacion      
-plt.figure(1)
-for i in range(0,len(key)):
- plt.plot(pasos,datos[key[i]][1],color[i],label=key[i])
-plt.ylabel("Magnetizacion")
-plt.legend(numpoints=1)
-plt.show()
-
-'''
 
 #Grafico Correlacion
 for i in range(0,len(key)):
