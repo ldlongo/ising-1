@@ -64,6 +64,7 @@ int pick_site(int *lattice, int n) {
 int flip(int *lattice, int n, float T, int idx, float H, float J, float K, float *pE, int *pM) {
    extern float *lut; //variable externa puntero a tabla. Evita calcular las exponenciales cada vez que se llama a flip.
    extern float *lut2;
+   float B;
 
    //Condiciones periodicas de contorno:
    
@@ -80,9 +81,10 @@ int flip(int *lattice, int n, float T, int idx, float H, float J, float K, float
     int DeltaM=-2*sij; //el negativo es porque si hay un +1 el cambio es del signo opuesto.
 
    //Calculo Beta*DeltaT y pi:
-    
+    B=(float)1/(float)T;
     int idxtabla2=(sij+1+4)/2; // si sij=-1 corresponde con la pos 2 y si sij=1 con la pos 3 de la tabla 2 
-    float pi=lut[5+(DeltaE+8)/4]*lut2[idxtabla2];
+    //float pi=lut[5+(DeltaE+8)/4]*lut2[idxtabla2];para J=1
+    float pi=pow(exp(1.),-B*(DeltaE))*lut2[idxtabla2]; //para todo J
     //float pi=lut2[idxtabla2];//para J=0
 
    //Acepto o Rechazo:
