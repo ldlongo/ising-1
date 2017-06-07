@@ -17,9 +17,9 @@ int main(int argc, char **argv) {
   float B;                               //beta
   float H=0;                             //campo magnetico
   float J;                             //interaccion ferro primeros vecinos
-  float K=-1;                          //interaccion antiferro diagonal
-  int ter=10000;                         //pasos de termalizacion
-  int niter=1000000;                    //pasos metropoli
+  float K=0;                          //interaccion antiferro diagonal
+  int ter=100000;                         //pasos de termalizacion
+  int niter=3000000;                    //pasos metropoli
   float E;                               //Energia
   int M;                                 //Magnetizacion
   float E2prom;                          //Energia al cuadrado promedio
@@ -44,9 +44,9 @@ int main(int argc, char **argv) {
   h=fopen(filename,"wt");
   fprintf(h,"Temperaturas\n");
   
-  float ts=5.5;    //temp sup
-  float ti=0.5;  //temp inf
-  int numtemp=5;  //cant de temp
+  float ts=5.1;    //temp sup
+  float ti=0.1;  //temp inf
+  int numtemp=100;  //cant de temp
   float paso=(float) (ts-ti)/numtemp;//numtemp;
   float *temp=malloc(numtemp*sizeof(float));
  
@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
   h=fopen(filename,"wt");
   fprintf(h,"Tamanos\n");
   
-  int ns=16;    //tamano sup
+  int ns=32;    //tamano sup
   int numtamano=1;  //cant de tamanos
   int *tamano=malloc(numtamano*sizeof(int));
  
@@ -78,8 +78,8 @@ int main(int argc, char **argv) {
   h=fopen(filename,"wt");
   fprintf(h,"Acople J\n");
   
-  float js=1;    //j sup
-  float ji=1;  //j inf
+  float js=0.3;    //j sup
+  float ji=0.3;  //j inf
   int numacople=1;  //cant de j
   float pasoacople=(float) (js-ji)/numacople;//numacople;
   float *acople=malloc(numacople*sizeof(float));
@@ -129,6 +129,8 @@ int main(int argc, char **argv) {
  //Recorro acople:
  for (z=0;z<numacople;z++){
    J=acople[z];
+   printf("%f",J);
+   
 
  //Archivo donde imprimo temp s energiaprom
   sprintf(filename,"E-T-%d-%0.2f.txt",n,J);
@@ -195,10 +197,10 @@ int main(int argc, char **argv) {
   //Imprimo datos en archivo de texto
 
    //Imprimo todos los e y m de cada paso metropolis                                
-   //sprintf(filename, "%d-%.2f-%.2f.txt",n,T,J); // el archivo tiene la temp y el acople J
-   // f=fopen(filename,"wt");
+   // sprintf(filename, "%d-%.2f-%.2f.txt",n,T,J); // el archivo tiene la temp y el acople J
+   //f=fopen(filename,"wt");
    //fprintf(f," Energia\tMagnetizacion\n");
-   // fprintf(f,"%8.3f\t%8.3f\n",(float)E/(n*n),(float)M/(n*n));          //aca imprimo los iniciales Eo y Mo
+   //fprintf(f,"%8.3f\t%8.3f\n",(float)E/(n*n),(float)M/(n*n));          //aca imprimo los iniciales Eo y Mo
 
    //Metropolis
    for (i = 0; i < niter; i++)
@@ -212,20 +214,20 @@ int main(int argc, char **argv) {
      };
    
    //fflush(f);
-   //fclose(f);
+   // fclose(f);
 
    //Imprimo red
-   imprimir(lattice,n);
+   //imprimir(lattice,n);
 
    //Temp
-   printf("T:%f ",temp[t]);
+   // printf("T:%f ",temp[t]);
    
    //Promedio Energia
    E2prom=promedio(E2,n,niter)[0];
    enerprom=promedio(e,n,niter)[0];
    enerdisp=promedio(e,n,niter)[1];
    cv=(E2prom-(enerprom*enerprom*n*n*n*n))/(T*T*n*n);
-   printf("<e>:%f d<e>:%f ",enerprom,enerdisp);
+   //printf("<e>:%f d<e>:%f ",enerprom,enerdisp);
    
    fprintf(k,"%4.3f\t%4.3f\t%4.3f\t%4.3f\n",T,enerprom,enerdisp,cv);
 
@@ -234,7 +236,7 @@ int main(int argc, char **argv) {
    magnprom=promedio(m,n,niter)[0];
    magndisp=promedio(m,n,niter)[1];
    suscep=(M2prom-(magnprom*magnprom*n*n*n*n))/(T);
-   printf("<m>:%f d<m>:%f\n ",magnprom,magndisp);
+   // printf("<m>:%f d<m>:%f\n ",magnprom,magndisp);
 
    fprintf(h,"%4.3f\t%4.3f\t%4.3f\t%4.3f\n",temp[t],magnprom,magndisp,suscep);
 
