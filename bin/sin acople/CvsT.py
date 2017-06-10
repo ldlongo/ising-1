@@ -60,7 +60,8 @@ for i in range(0,len(key)):
  plt.plot(calor[i][0],calor[i][1],color[i],label='solucion numerica') 
 plt.xlabel("Temperatura")
 plt.ylabel("Calor especifico")
-plt.legend(loc='lower right')
+plt.text(3.1, 0.34, r'$c_{v} = \frac{B^2}{T^2}[1-{tanh^2(\frac{B}{kT})}]$', fontsize=20, bbox=dict(facecolor='m', alpha=0.3))
+plt.legend(loc='upper right')
 plt.show()
 
 

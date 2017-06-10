@@ -62,7 +62,8 @@ for i in range(0,len(key)):
  plt.plot(suscep[i][0],suscep[i][1],color[i],label="solucion numerica") 
 plt.xlabel("Temperatura")
 plt.ylabel("Susceptibilidad")
-plt.legend(loc='lower right')
+plt.text(3.3,355, r'$\chi=\frac{N}{kT}[1-tanh^2(\frac{B}{kT})]$', fontsize=20, bbox=dict(facecolor='g', alpha=0.3))
+plt.legend(loc='upper right')
 plt.show()
 
 
