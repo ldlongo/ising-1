@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
   float prob = 0.5;                      //prob de llenado 
   float T;                               //temperatura
   float B;                               //beta
-  float H=0;                             //campo magnetico
+  float H=1;                             //campo magnetico
   float J;                             //interaccion ferro primeros vecinos
   float K=0;                          //interaccion antiferro diagonal
   int ter=100000;                         //pasos de termalizacion
@@ -31,11 +31,7 @@ int main(int argc, char **argv) {
   float cv;                              //calor especifico
   float suscep;                          //susceptibilidad
   int contador;
-  //float *e= malloc(niter*sizeof(float)); //energia por nodo
-  //float *m=malloc(niter*sizeof(float));   //magnetiz por nodo
-  
-  //float *tabla=malloc(10*sizeof(float));
-  //float *tabla2=malloc(2*sizeof(float));
+
   
   //Lleno temp e imprimo en archivo externo temp.txt
   char filename[64];
@@ -46,7 +42,7 @@ int main(int argc, char **argv) {
   
   float ts=5.1;    //temp sup
   float ti=0.1;  //temp inf
-  int numtemp=100;  //cant de temp
+  int numtemp=50;  //cant de temp
   float paso=(float) (ts-ti)/numtemp;//numtemp;
   float *temp=malloc(numtemp*sizeof(float));
  
@@ -78,8 +74,8 @@ int main(int argc, char **argv) {
   h=fopen(filename,"wt");
   fprintf(h,"Acople J\n");
   
-  float js=0.3;    //j sup
-  float ji=0.3;  //j inf
+  float js=0;    //j sup
+  float ji=0;  //j inf
   int numacople=1;  //cant de j
   float pasoacople=(float) (js-ji)/numacople;//numacople;
   float *acople=malloc(numacople*sizeof(float));
@@ -104,9 +100,6 @@ int main(int argc, char **argv) {
   //k=fopen(filename,"wt");
   //fprintf(k,"T\t<e>\td<e>\n");
 
-  //Lleno la red una sola vez
-  // srand(time(NULL));
-  // fill_lattice(lattice, n, prob);
   int x;
   int z;
   int t;
@@ -119,12 +112,8 @@ int main(int argc, char **argv) {
   n=tamano[x];
   int *lattice = malloc(n * n * sizeof(int));
   //Lleno la red una sola vez
-   srand(time(NULL));
-   fill_lattice(lattice, n, prob);
-  //float *e=malloc(niter*sizeof(float)); //energia por nodo
-  //float *m=malloc(niter*sizeof(float));   //magnetiz por nodo
-  // float *tabla=malloc(10*sizeof(float));
-  //float *tabla2=malloc(2*sizeof(float));
+  srand(time(NULL));
+  fill_lattice(lattice, n, prob);
    
  //Recorro acople:
  for (z=0;z<numacople;z++){
@@ -132,7 +121,7 @@ int main(int argc, char **argv) {
    printf("%f",J);
    
 
- //Archivo donde imprimo temp s energiaprom
+ //Archivo donde imprimo temp vs energiaprom
   sprintf(filename,"E-T-%d-%0.2f.txt",n,J);
   k=fopen(filename,"wt");
   fprintf(k,"T\t<e>\td<e>\tcv\n");
@@ -150,8 +139,8 @@ int main(int argc, char **argv) {
   float *E2=malloc(niter*sizeof(float));//energia al cuadrado
   float *m=malloc(niter*sizeof(float));   //magnetiz por nodo
   float *M2=malloc(niter*sizeof(float));  //magnetiz al cuadrado
-  float *tabla=malloc(10*sizeof(float));
-  float *tabla2=malloc(2*sizeof(float));
+  float *tabla=malloc(10*sizeof(float));  //tabla para parte acople de E
+  float *tabla2=malloc(2*sizeof(float));  //tabla para parte campo  de E
     
   //---------------------------------------
   //Tabla1
@@ -161,7 +150,7 @@ int main(int argc, char **argv) {
   
   for (i=0;i<5;i++){
     tabla[i]=-8+4*i;
-    tabla[i+5]=pow(exp(1.),-B*(-8+4*i));
+    tabla[i+5]=pow(exp(1.),-B*J*(-8+4*i));
    }
    lut=tabla;
   //-------------------------------------
@@ -174,16 +163,7 @@ int main(int argc, char **argv) {
   }
   lut2=tabla2;
 
-  //Imprimo la tabla 2
-  //for (int i=0;i<2;i++){
-  //  printf("%f\t%f\n",tabla2[i],tabla2[i+2]);
-  //}
   //-------------------------------------
-  
-  //Lleno la red en cada temp
-  // srand(time(NULL));
-  //fill_lattice(lattice, n, prob);
-  
   E=energia(lattice,n, H, J, K);
   
   M=magnetizacion(lattice,n);
@@ -217,17 +197,18 @@ int main(int argc, char **argv) {
    // fclose(f);
 
    //Imprimo red
-   //imprimir(lattice,n);
+   imprimir(lattice,n);
 
-   //Temp
-   // printf("T:%f ",temp[t]);
+   //Imprimo Temp
+   //printf("T:%f ",temp[t]);
    
    //Promedio Energia
    E2prom=promedio(E2,n,niter)[0];
    enerprom=promedio(e,n,niter)[0];
    enerdisp=promedio(e,n,niter)[1];
    cv=(E2prom-(enerprom*enerprom*n*n*n*n))/(T*T*n*n);
-   //printf("<e>:%f d<e>:%f ",enerprom,enerdisp);
+   //Imprimo <e> d<e>
+   // printf("<e>:%f d<e>:%f ",enerprom,enerdisp);
    
    fprintf(k,"%4.3f\t%4.3f\t%4.3f\t%4.3f\n",T,enerprom,enerdisp,cv);
 
@@ -236,7 +217,8 @@ int main(int argc, char **argv) {
    magnprom=promedio(m,n,niter)[0];
    magndisp=promedio(m,n,niter)[1];
    suscep=(M2prom-(magnprom*magnprom*n*n*n*n))/(T);
-   // printf("<m>:%f d<m>:%f\n ",magnprom,magndisp);
+   //Imprimo <m> d<m>
+   //printf("<m>:%f d<m>:%f\n ",magnprom,magndisp);
 
    fprintf(h,"%4.3f\t%4.3f\t%4.3f\t%4.3f\n",temp[t],magnprom,magndisp,suscep);
 
