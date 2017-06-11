@@ -56,6 +56,7 @@ for i in range(0,len(key)):
 plt.xlabel("Temperatura")
 plt.ylabel("calor especifico")
 plt.legend(loc='upper right')
+plt.text(2.95, 0.0012, r'$Acoplamiento$'+' '+r'$J$', fontsize=20, bbox=dict(facecolor='b', alpha=0.3)) 
 plt.show()
 
 
