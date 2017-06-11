@@ -43,8 +43,8 @@ plt.plot(temp,mteorica,'r',label="solucion exacta")
 
 #Grafico MvsT
 plt.errorbar(magnet[0][0], magnet[0][1], magnet[0][2], fmt='o', color='r',label="solucion numerica")
-plt.xlabel("Temperatura")
-plt.ylabel("Magnetizacion promedio <m>")
+plt.xlabel(r'$Temperatura$', fontsize=20)
+plt.ylabel(r'$Magnetizacion$'+' '+r'$<m>$', fontsize=20)
 plt.text(3.5, 0.78, r'$<m> = tanh(\frac{B}{kT})$', fontsize=20, bbox=dict(facecolor='r', alpha=0.3))
 plt.legend()
 plt.show()

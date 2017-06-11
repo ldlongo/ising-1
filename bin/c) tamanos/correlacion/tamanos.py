@@ -47,9 +47,9 @@ color=['bo','ro','yo','mo','co','go','ko','ro']
 #Grafico Correlacion
 for i in range(0,len(key)):
  plt.plot(corr[key[i]][0],corr[key[i]][1],color[i],label=key[i])
-plt.xlabel("k") 
-plt.ylabel("Correlacion")
+plt.xlabel(r'$k$', fontsize=20) 
+plt.ylabel(r'$Correlacion$', fontsize=20)
 plt.legend(numpoints=1)
-plt.text(55000, 0.85, r'$Tamanos$'+' '+r'$J$', fontsize=20, bbox=dict(facecolor='g', alpha=0.3)) 
+plt.text(55000, 0.85, r'$Tamanos$'+' '+r'$n$', fontsize=20, bbox=dict(facecolor='g', alpha=0.3)) 
 plt.show()
 

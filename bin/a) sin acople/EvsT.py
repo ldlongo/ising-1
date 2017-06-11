@@ -44,9 +44,9 @@ plt.plot(temp,eteorica,'b',label="solucion exacta")
 
 #Grafico EvsT
 plt.errorbar(energia[0][0], energia[0][1], energia[0][2], fmt='o',color='b',label="solucion numerica")
-plt.xlabel("Temperatura")
-plt.ylabel("Energia promedio <e>")
-plt.text(0.18,-0.32, r'$<e>=B$'+' '+r'$tanh(\frac{B}{kT})$', fontsize=20, bbox=dict(facecolor='b', alpha=0.3))
-plt.legend(loc='upper left')
+plt.xlabel(r'$Temperatura$',fontsize=20)
+plt.ylabel(r'$Energia$'+' '+r'$<e>$',fontsize=20)
+plt.text(2.5,-0.6, r'$<e>=B$'+' '+r'$tanh(\frac{B}{kT})$', fontsize=20, bbox=dict(facecolor='b', alpha=0.3))
+plt.legend(loc='upper left',numpoints=1)
 plt.show()
 

@@ -48,10 +48,10 @@ colorline=['b','r','y','m','c','g','k','r']
 for i in range(0,len(key)):
  plt.plot(energia[key[i]][0],energia[key[i]][1],color[i],label=key[i])
  plt.plot(energia[key[i]][0],energia[key[i]][1],colorline[i])
-plt.xlabel("Temperatura T")
-plt.ylabel("Energia <E>")
+plt.xlabel(r'$Temperatura$', fontsize=20)
+plt.ylabel(r'$Energia$'+' '+ r'$<e>$', fontsize=20)
 plt.text(2.5, 0.2, r'$Acoplamiento$'+' '+r'$J$', fontsize=20, bbox=dict(facecolor='b', alpha=0.3)) 
-plt.legend(numpoints=1)
+plt.legend(loc='lower right',numpoints=1)
 
 plt.show()
 

@@ -49,9 +49,10 @@ colorline=['b','r','y','m','c','g','k','r']
 for i in range(0,len(key)):
  #plt.errorbar(magnet[i][0], magnet[i][1], magnet[i][2],color='r')
  plt.plot(magnet[i][0],magnet[i][1],color[i],label=key[i])
-plt.xlabel("Temperatura")
-plt.ylabel("Magnetizacion promedio <m>")
-plt.text(2.5, 0.85, r'$Tamanos$'+' '+r'$J$', fontsize=20, bbox=dict(facecolor='g', alpha=0.3)) 
-plt.legend()
+plt.xlabel(r'$Temperatura$', fontsize=20)
+plt.ylabel(r'$Magnetizacion$'+' '+'$<m>$', fontsize=20)
+plt.text(2.5, 0.85, r'$Tamanos$'+' '+r'$n$', fontsize=20, bbox=dict(facecolor='g', alpha=0.3)) 
+plt.legend(numpoints=1)
+plt.ylim((-1.5,1.5))
 plt.show()
 

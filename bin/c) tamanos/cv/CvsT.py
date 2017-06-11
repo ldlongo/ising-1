@@ -54,10 +54,10 @@ for i in range(0,len(key)):
  #plt.errorbar(energia[i][0], energia[i][1], energia[i][2],color=colorline[i])
  plt.plot(calor[i][0],calor[i][1],colorline[i])
  plt.plot(calor[i][0],calor[i][1],color[i],label=key[i]) 
-plt.xlabel("Temperatura")
-plt.ylabel("calor especifico")
-plt.legend(loc='upper right')
-plt.text(2.5, 0.0065, r'$Tamanos$'+' '+r'$J$', fontsize=20, bbox=dict(facecolor='g', alpha=0.3)) 
+plt.xlabel(r'$Temperatura$', fontsize=20)
+plt.ylabel(r'$Calor$'+' '+r'$especifico$'+' '+r'$c_{V}$', fontsize=20)
+plt.legend(loc='upper right',numpoints=1)
+plt.text(2.5, 0.0065, r'$Tamanos$'+' '+r'$n$', fontsize=20, bbox=dict(facecolor='g', alpha=0.3)) 
 plt.show()
 
 

@@ -48,8 +48,8 @@ colorline=['b','r','y','m','c','g','k','r']
 for i in range(0,len(key)):
  plt.plot(magnet[key[i]][0],magnet[key[i]][1],color[i],label=key[i])
  plt.plot(magnet[key[i]][0],magnet[key[i]][1],colorline[i])
-plt.xlabel("Temperatura T")
-plt.ylabel("Magnetizacion <M>")
+plt.xlabel(r'$Temperatura$', fontsize=20)
+plt.ylabel(r'$Magnetizacion$'+' '+'$<M>$', fontsize=20)
 plt.text(2.5, 0.8, r'$Acoplamiento$'+' '+r'$J$', fontsize=20, bbox=dict(facecolor='b', alpha=0.3)) 
 plt.legend(numpoints=1)
 

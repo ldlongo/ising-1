@@ -67,10 +67,10 @@ for k in range(0,len(acopkey)):
  plt.figure(k)
  for i in range(0,len(tempkey)):
   plt.plot(corr[tempkey[i]][0],corr[tempkey[i]][1],color[i],label=tempkey[i])
- plt.xlabel("k") 
- plt.ylabel("Correlacion")
+ plt.xlabel(r'$k$', fontsize=20) 
+ plt.ylabel(r'$Correlacion$', fontsize=20)
  plt.text(10000, 0.9, r'$J=$'+"%0.1f" % float (acopkey[k]), fontsize=20, bbox=dict(facecolor='b', alpha=0.3))
- plt.legend(numpoints=1)
+ plt.legend(loc='upper rigth', numpoints=1)
 
 plt.show()
 

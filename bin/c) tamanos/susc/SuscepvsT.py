@@ -16,7 +16,7 @@ archivo=[]
 
 for line in lines:
     p=line.split()
-    key.append("%0.2f" % float(p[0]))
+    key.append("%d" % float(p[0]))
     archivo.append("M-T"+"-"+"%d" % float(p[0]) +"-"+"%0.2f" % float(J)+".txt")
 
         
@@ -51,10 +51,10 @@ for i in range(0,len(key)):
  #plt.errorbar(energia[i][0], energia[i][1], energia[i][2],color=colorline[i])
  plt.plot(suscep[i][0],suscep[i][1],color[i],label=key[i])
  plt.plot(suscep[i][0],suscep[i][1],colorline[i]) 
-plt.xlabel("Temperatura")
-plt.ylabel("Susceptibilidad")
-plt.text(3.3, 0.06, r'$Tamanos$'+' '+r'$J$', fontsize=20, bbox=dict(facecolor='g', alpha=0.3)) 
-plt.legend(loc='lower right')
+plt.xlabel(r'$Temperatura$', fontsize=20)
+plt.ylabel(r'$Susceptibilidad$'+' '+r'$\chi$', fontsize=20)
+plt.text(2.5, 0.12, r'$Tamanos$'+' '+r'$n$', fontsize=20, bbox=dict(facecolor='g', alpha=0.3)) 
+plt.legend(loc='upper right',numpoints=1)
 plt.show()
 
 
