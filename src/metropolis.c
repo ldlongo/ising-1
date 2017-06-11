@@ -64,8 +64,9 @@ int pick_site(int *lattice, int n) {
 int flip(int *lattice, int n, float T, int idx, float H, float J, float K, float *pE, int *pM) {
    extern float *lut; //variable externa puntero a tabla. Evita calcular las exponenciales cada vez que se llama a flip.
    extern float *lut2;
-   float B;
-
+   float B;              //para K=-1
+   B=(float)1/(float)(T);//para K=-1
+   
    //Condiciones periodicas de contorno:
    
     int i=idx/n;//Paso de idx a i, j
@@ -75,18 +76,20 @@ int flip(int *lattice, int n, float T, int idx, float H, float J, float K, float
     int  sij=lattice[i*n+j]; //el actual
 
    //Calculo la variacion de energia y magnetizacion  si lo diera vuelta:
-    
+ 
     int DeltaE=2*J*sij*(spinborde[0]+spinborde[1]+spinborde[2]+spinborde[3])+H*2*sij+2*K*sij*(spinborde[4]+spinborde[5]+spinborde[6]+spinborde[7]);
-    //int DeltaE=H*2*sij;
     int DeltaM=-2*sij; //el negativo es porque si hay un +1 el cambio es del signo opuesto.
 
    //Calculo Beta*DeltaT y pi:
-    B=(float)1/(float)T;
-    int idxtabla2=(sij+1+4)/2; // si sij=-1 corresponde con la pos 2 y si sij=1 con la pos 3 de la tabla 2 
-    //float pi=lut[5+(DeltaE+8)/4]*lut2[idxtabla2];para J=1
-    float pi=pow(exp(1.),-B*(DeltaE))*lut2[idxtabla2]; //para todo J
-    //float pi=lut2[idxtabla2];//para J=0
-
+    
+    //para K=0:(ferro o antiferro)
+    //int idxtabla=5+((2*sij*(spinborde[0]+spinborde[1]+spinborde[2]+spinborde[3])+8)/4);
+    //int idxtabla2=(sij+1+4)/2; // si sij=-1 corresponde con la pos 2 y si sij=1 con la pos 3 de la tabla 2 
+    //float pi=lut[idxtabla]*lut2[idxtabla2];
+    
+    //para K=-1(ferro y antiferro con diagonales)
+    float pi=pow(exp(1.),-B*DeltaE);
+    
    //Acepto o Rechazo:
     
     if (pi>1)
@@ -127,7 +130,6 @@ int energia(int *lattice, int n, float H, float J, float K){
            int  sij=lattice[i*n+j]; //el actual 
 	   //Energia acumulo: pongo el dos en  H*2*sij  para no afectar al termino que tiene el campo magnetico luego cuando hago E=E/2.
 	   E=E-J*sij*(spinborde[0]+spinborde[1]+spinborde[2]+spinborde[3])-H*2*sij-K*sij*(spinborde[4]+spinborde[5]+spinborde[6]+spinborde[7]);
-	   // E=E-H*2*sij; 
       }
      }
  //Imprimo la energia
@@ -215,7 +217,7 @@ int correlacion(float *ecorr, int contador, int n, float T, float H, float J){
   var=(float)sumavar/(contador);
   
   //covarianza_k:
-  for(int k=0;k<100000;k+=100)
+  for(int k=0;k<20000;k+=10)
     {
       sumacov=0;
       cov_k=0;
