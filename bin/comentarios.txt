@@ -1,0 +1,13 @@
+Comentarios de Ising:
+
+a) "sin acople": esta carpeta contiene el analisis de energia, magnetizacion, cv y susc. para J=0 y H=1(campo) en el rango de temperaturas entre 0 y 5. Se subieron archivos .py para cada magnitud termodinamica que toma los datos y los grafica. En cada archivo se grafica ademas la solucion teorica correspondiente a la teoria para el caso sin acople y se superponen con la solucion de las simulaciones.
+
+b) "corracople": esta carpeta contiene 4 carpetas para cada magnitud termodinamica las cuales se estudiaron para valores de acoplamiento J entre 1 y 0.1 con H=0. Tambien hay una carpeta correlacion donde se muestra la funcion correlacion para una red de 32x32 y variando el valor de acoplamiento. Se puede observar para algunos valores de J que cerca de la Tc tarda mas en descorrelacionarse.
+
+c) "tamanos": contiene carpetas igual al punto b). Ahora estudiamos disntintos tamaños de red entre 512 y 16
+
+d) "antiferro": se estudio el caso J=-1 y H=1. Cada carpeta contiene una magnitud termodinamica y se estudiaron para distintos tamaños de red entre 512 y 16.
+
+e) "diagonales antiferro": se estudio el caso J=1 H=0 y K=-1 donde K es el factor de acoplamiento con los segundos vecinos de la diagonal. En este caso el codigo metropolis.c contiene una linea comentada, es la unica parte donde no hemos recurrido a una look up table, y calculamos pi de la forma normal. Dentro de frustracion hay dos carpetas para dos tamaños de red "n=4" y "n=32". Cada carpeta a su vez contiene graficos de Energia y Magnetizacion vs Temperatura. En este caso para cada tamaño de red fija se realizacon 5 corridas de cada red debido a las oscilaciones que aparecian en la magnetizacion a medida que nos ibamos acercando a temperatura cero.
+
+f) "bimodal": en esta parte se estudiaron las fluctuaciones que aparecen en la magnetizacion para el caso ferromagnetico cerca de la Tc. Se realizaron 15000 corridas para T=2.26(t critica teorica para ising) y se realizo un histograma de la magnetizacion promedio. Tambien realizamos un histograma tambien a Tc pero para la energia. Histograma.py lee los datos y grafica un histograma, poniendo como entrada extremo inf sup del intervalo y cantidad de bines que deseamos.  
